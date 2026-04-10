@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anvaya | Create Your Space</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/auth.css">
+</head>
+
+<body>
+
+<div class="bg-animation">
+    <div class="hearts"></div>
+
+    <div class="card">
+
+        <h1 class="logo">ANVAYA</h1>
+        <p class="subtitle">Your private world, just for two ❤️</p>
+
+        <form id="registerForm">
+
+            <!-- USERNAME -->
+            <div class="field">
+                <label>Username *</label>
+                <input id="username" placeholder="Choose your identity">
+                <small class="hint">Minimum 4 characters</small>
+                <p class="error"></p>
+            </div>
+
+            <!-- EMAIL -->
+            <div class="field">
+                <label>Email *</label>
+                <input id="email" placeholder="Enter your email">
+                <small class="hint">Valid email required</small>
+                <p class="error"></p>
+            </div>
+
+            <!-- PHONE -->
+            <div class="field">
+                <label>Phone *</label>
+                <input id="phone" placeholder="10 digit number">
+                <small class="hint">Only 10 digits</small>
+                <p class="error"></p>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="field">
+                <label>Password *</label>
+
+                <div class="pass-wrap">
+                    <input type="password" id="password" placeholder="Create password">
+                    <span id="eye">👁️</span>
+                </div>
+
+                <!-- dynamic requirements -->
+                <div class="pass-rules">
+                    <p id="rule-length">• 8 characters minimum</p>
+                    <p id="rule-symbol">• 1 symbol</p>
+                    <p id="rule-number">• 2 numbers</p>
+                </div>
+
+                <p class="error"></p>
+            </div>
+
+            <!-- GENDER -->
+            <div class="field">
+                <label>Identity</label>
+                <select id="gender">
+                    <option value="">Select (optional)</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <button id="btn" disabled>Create Account</button>
+
+        </form>
+
+        <p class="footer-link">
+            Already connected? <a href="login.html">Sign in</a>
+        </p>
+
+    </div>
+</div>
+
+<script src="../../js/auth/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya | Login</title>
+
+    <link rel="stylesheet" href="../../css/auth.css">
+</head>
+
+<body>
+
+<div class="login-bg">
+
+    <!-- HEARTS -->
+    <div class="login-hearts"></div>
+
+    <div class="login-card">
+
+        <div class="login-logo">∞</div>
+
+        <h1 class="login-title">ANVAYA</h1>
+        <p class="login-tagline">Your private world, just for two ❤️</p>
+
+        <p class="login-subtitle">Login to your private space ❤️</p>
+
+        <form id="loginForm">
+
+            <!-- EMAIL -->
+            <div class="login-field">
+                <label>Email or Phone *</label>
+                <input type="text" id="loginId">
+                <span class="login-hint">Use your registered email or phone</span>
+                <p class="login-error" id="loginIdError"></p>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="login-field login-pass-wrap">
+                <label>Password *</label>
+                <input type="password" id="password">
+                <span id="togglePassword" class="login-eye">👁️</span>
+                <span class="login-hint">Enter your secure password</span>
+                <p class="login-error" id="passwordError"></p>
+            </div>
+
+            <button type="submit" id="loginBtn" disabled>
+                Enter Space
+            </button>
+
+        </form>
+
+        <div class="login-footer">
+            <p>New here? <a href="register.html">Create account</a></p>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="../../js/auth/login.js"></script>
+
+</body>
+</html>

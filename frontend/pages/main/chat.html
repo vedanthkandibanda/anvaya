@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya | Chat</title>
+
+    <link rel="stylesheet" href="../../css/chat.css">
+</head>
+
+<body>
+
+    <div class="chat-bg">
+
+        <!-- ❤️ HEARTS -->
+        <div class="chat-hearts" id="chatHearts"></div>
+
+        <!-- CHAT CONTAINER -->
+        <div class="chat-container">
+            <div id="chatMoodLayer" class="chat-mood-layer"></div>
+            <!-- TOP BAR -->
+            <div class="chat-header">
+                <button class="back-btn">←</button>
+
+                <div class="partner-info">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="partner-dp">
+                    <div>
+                        <div class="chat-title-row">
+                            <span id="statusText">Online</span>
+                        </div>
+                        <p id="partnerStatusText">Connected ❤️</p>
+                        <p id="typingText" class="hidden">Typing...</p>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE -->
+                <div class="chat-header-right">
+                    <button id="moodBtn" class="mood-btn">Mood</button>
+
+                    <div class="mood-popup hidden" id="moodPopup">
+                        <button onclick="setMoodTheme('love')">❤️ Love</button>
+                        <button onclick="setMoodTheme('romantic')">🌙 Romantic</button>
+                        <button onclick="setMoodTheme('sad')">🌧 Sad</button>
+                        <button onclick="setMoodTheme('angry')">⚡ Angry</button>
+                        <button onclick="setMoodTheme('period')">🌸 Period</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- MESSAGES -->
+            <div class="chat-messages" id="chatMessages">
+
+                <div class="message received">
+                    Hi ❤️
+                </div>
+
+                <div class="message sent">
+                    Hello ✨
+                </div>
+
+            </div>
+
+            <!-- INPUT -->
+            <div class="chat-input-box">
+
+                <input type="text" id="messageInput" placeholder="Type something beautiful...">
+                <input type="file" id="fileInput" hidden>
+<div class="upload-wrapper">
+    <button id="uploadBtn" class="upload-btn">
+        <span>＋</span>
+    </button>
+</div>
+<button id="momentBtn">✨</button>
+
+<div id="momentOverlay" class="moment-overlay hidden"></div>
+                <button id="delayBtn" class="delay-btn">⏱</button>
+<div id="scheduleBox" class="schedule-box hidden">
+    <p id="scheduleLabel" class="schedule-label">Enter the message and select the date/time to send it later.</p>
+    <textarea id="scheduleMessageInput" class="schedule-textarea" placeholder="Type the scheduled message..."></textarea>
+    <input type="datetime-local" id="scheduleTime">
+    <div id="scheduleSummary" class="schedule-summary hidden"></div>
+    <div class="schedule-actions">
+        <button id="confirmSchedule">Schedule</button>
+        <button id="editSchedule" class="hidden">Edit</button>
+        <button id="cancelSchedule" class="cancel-btn">Cancel</button>
+    </div>
+    <span id="scheduleFeedback" class="schedule-feedback"></span>
+</div>
+
+                <button id="sendBtn">➤</button>
+                <span class="send-status" id="sendStatus"></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="imagePreview" class="image-preview hidden">
+    <img id="previewImg">
+</div>
+<div id="reactionBox" class="reaction-box hidden">
+    <span>❤️</span>
+    <span>🔥</span>
+    <span>😢</span>
+    <span>😂</span>
+</div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="../../js/main/chat.js"></script>
+
+</body>
+
+</html>

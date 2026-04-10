@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya | Dashboard</title>
+
+    <link rel="stylesheet" href="../../css/dashboard.css">
+</head>
+
+<body>
+
+    <div class="login-bg">
+
+        <!-- ❤️ HEARTS -->
+        <div class="hearts" id="hearts"></div>
+
+        <!-- MAIN CARD -->
+        <div class="login-card dashboard-card">
+
+            <!-- NAVBAR -->
+            <div class="dashboard-nav">
+
+                <div class="nav-user">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="dp">
+                    <span>You</span>
+                </div>
+
+                <!-- 💓 HEARTBEAT -->
+                <div class="nav-state">
+                    <div class="wave"></div>
+                </div>
+
+                <div class="nav-user">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="dp">
+                </div>
+
+            </div>
+
+            <!-- CONNECTION -->
+            <div class="connection-box">
+
+                <p class="connection-title">Your Connection</p>
+                <h3 id="connectionName">Not Connected</h3>
+
+                <div id="connectionActions"></div>
+
+            </div>
+
+            <!-- 🔍 SEARCH MODAL -->
+<div id="searchModal" class="search-modal hidden">
+
+    <div class="search-content">
+
+        <div class="search-header">
+            <h3>Find Your Person ❤️</h3>
+            <span onclick="closeSearchModal()" class="close-btn">✖</span>
+        </div>
+
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Search username or email"
+        >
+
+        <div id="searchResults"></div>
+
+    </div>
+
+</div>
+<!-- 📩 REQUESTS MODAL -->
+<div id="requestsModal" class="search-modal hidden">
+
+    <div class="search-content">
+
+        <div class="search-header">
+            <h3>Connection Requests ❤️</h3>
+            <span onclick="closeRequestsModal()" class="close-btn">✖</span>
+        </div>
+
+        <div id="requestsResults"></div>
+
+    </div>
+
+</div>
+
+            <!-- GRID -->
+            <div class="dashboard-grid">
+                <div class="grid-item">🎧 Listen</div>
+                <div class="grid-item">🎬 Watch</div>
+                <div class="grid-item">📸 Vault</div>
+                <div class="grid-item">💬 Chat</div>
+                <div class="grid-item">📞 Call</div>
+                <div class="grid-item">🎥 Video</div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <script src="../../js/main/dashboard.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,322 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* BACKGROUND */
+.bg-animation {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ❤️ RANDOM HEARTS */
+.hearts span {
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.2;
+    animation: float 10s linear infinite;
+}
+
+@keyframes float {
+    from { transform: translateY(100vh); }
+    to { transform: translateY(-100vh); }
+}
+
+/* CARD */
+.card {
+    width: 360px;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    padding: 25px;
+    border-radius: 20px;
+    background: white;
+
+    margin: auto;
+}
+
+/* SCROLL STYLE */
+.card::-webkit-scrollbar {
+    width: 5px;
+}
+.card::-webkit-scrollbar-thumb {
+    background: #ff4d6d;
+    border-radius: 10px;
+}
+
+/* TEXT */
+.logo {
+    text-align: center;
+    font-weight: 800;
+    color: #c9184a;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+/* FIELD */
+.field {
+    margin-bottom: 14px;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* INPUT */
+input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    margin-top: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+/* FOCUS → SHOW HINT */
+.hint {
+    display: none;
+    font-size: 11px;
+    color: gray;
+}
+
+.field:focus-within .hint {
+    display: block;
+}
+
+/* VALID / INVALID */
+input.valid {
+    border-color: green;
+}
+input.invalid {
+    border-color: red;
+}
+
+/* ERROR */
+.error {
+    font-size: 11px;
+    color: red;
+}
+
+/* PASSWORD RULES */
+.pass-rules p {
+    font-size: 11px;
+    color: gray;
+}
+.pass-rules p.valid {
+    color: green;
+}
+
+/* PASSWORD */
+.pass-wrap {
+    position: relative;
+}
+#eye {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 20px;
+    border: none;
+    background: gray;
+    color: white;
+}
+
+button.active {
+    background: #ff4d6d;
+}
+button.success {
+    background: green;
+}
+
+/* FOOTER */
+.footer-link {
+    text-align: center;
+    margin-top: 10px;
+}
+.footer-link a {
+    color: green;
+}
+
+/* SELECT STYLE */
+select {
+    background: #f2f2f2;
+}
+
+/* BACKGROUND */
+.login-bg {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* HEARTS */
+.login-hearts span {
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.2;
+    animation: float 10s linear infinite;
+}
+
+@keyframes float {
+    from { transform: translateY(100vh); }
+    to { transform: translateY(-100vh); }
+}
+
+/* CARD */
+.login-card {
+    width: 360px;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    padding: 25px;
+    border-radius: 20px;
+    background: white;
+}
+
+/* SCROLL */
+.login-card::-webkit-scrollbar {
+    width: 5px;
+}
+.login-card::-webkit-scrollbar-thumb {
+    background: #ff4d6d;
+    border-radius: 10px;
+}
+
+/* TEXT */
+.login-logo {
+    text-align: center;
+    font-weight: 800;
+    color: #c9184a;
+}
+
+.login-title {
+    text-align: center;
+    color: #c9184a;
+}
+
+.login-tagline {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.login-subtitle {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 15px;
+}
+
+/* FIELD */
+.login-field {
+    margin-bottom: 14px;
+}
+
+.login-field label {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* INPUT */
+.login-field input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #eee;
+    margin-top: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+/* FOCUS */
+.login-field input:focus {
+    border-color: #ff4d6d;
+}
+
+/* HINT */
+.login-hint {
+    display: none;
+    font-size: 11px;
+    color: gray;
+}
+
+.login-field:focus-within .login-hint {
+    display: block;
+}
+
+/* VALID / INVALID */
+input.valid {
+    border-color: green;
+}
+input.invalid {
+    border-color: red;
+}
+
+/* ERROR */
+.login-error {
+    font-size: 11px;
+    color: red;
+}
+
+/* PASSWORD */
+.login-pass-wrap {
+    position: relative;
+}
+
+.login-eye {
+    position: absolute;
+    right: 10px;
+    top: 32px;
+    cursor: pointer;
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 20px;
+    border: none;
+    background: gray;
+    color: white;
+    transition: 0.3s;
+}
+
+button.active {
+    background: #ff4d6d;
+    cursor: pointer;
+}
+
+/* GREEN FINAL STATE */
+button.active:hover {
+    background: green;
+}
+
+/* FOOTER */
+.login-footer {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.login-footer a {
+    color: green;
+}

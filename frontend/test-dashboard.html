@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Test</title>
+</head>
+<body>
+    <h1>Dashboard Test</h1>
+    <button onclick="testDashboard()">Test Dashboard</button>
+    <button onclick="setUser()">Set Test User</button>
+    <div id="result"></div>
+
+    <script>
+        function setUser() {
+            localStorage.setItem("userId", "5");
+            localStorage.setItem("token", "test-token");
+            document.getElementById("result").innerText = "User set!";
+        }
+
+        async function testDashboard() {
+            try {
+                const res = await fetch('http://localhost:5000/api/pair/status/5');
+                const data = await res.json();
+                document.getElementById("result").innerText = "API Response: " + JSON.stringify(data);
+            } catch (err) {
+                document.getElementById("result").innerText = "Error: " + err.message;
+            }
+        }
+    </script>
+</body>
+</html>

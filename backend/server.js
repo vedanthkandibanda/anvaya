@@ -1,0 +1,111 @@
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import http from "http";
+import { Server } from "socket.io";
+
+
+import db from "./config/dbConfig.js";
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import pairRoutes from "./routes/pairRoutes.js";
+import messageRoutes from "./routes/messageRoutes.js";
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
+app.use("/api/pair", pairRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/uploads", express.static("backend/uploads"));
+
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: "*"
+    }
+});
+
+export { io };
+
+let onlineUsers = {};
+
+io.on("connection", (socket) => {
+
+    socket.on("joinRoom", ({ pairId, userId }) => {
+        socket.join(pairId);
+
+        // store user online
+        onlineUsers[userId] = socket.id;
+
+        io.to(pairId).emit("userOnline", userId);
+    });
+
+    // 🔥 TYPING
+    socket.on("typing", ({ pairId, userId }) => {
+        socket.to(pairId).emit("showTyping", userId);
+    });
+
+    socket.on("stopTyping", ({ pairId, userId }) => {
+        socket.to(pairId).emit("hideTyping");
+    });
+
+    socket.on("disconnect", () => {
+        console.log("User disconnected");
+    });
+
+    socket.on("messageDelivered", (pairId) => {
+    socket.to(pairId).emit("updateDelivered");
+    });
+
+    socket.on("messageSeen", (pairId) => {
+    socket.to(pairId).emit("updateSeen");
+    });
+
+    socket.on("sendMoment", (data) => {
+    socket.to(data.pairId).emit("receiveMoment", data);
+    });
+});
+
+setInterval(async () => {
+    try {
+        const [messages] = await db.query(
+            "SELECT * FROM messages WHERE is_delayed=1 AND deliver_at <= UTC_TIMESTAMP()"
+        );
+
+        for (let msg of messages) {
+            console.log(`Delivering scheduled message id=${msg.id} pair=${msg.pair_id} sender=${msg.sender_id} deliver_at=${msg.deliver_at}`);
+
+            // mark as normal before notifying clients so the message is visible when clients reload
+            await db.query(
+                "UPDATE messages SET is_delayed=0 WHERE id=?",
+                [msg.id]
+            );
+
+            // send via socket
+            io.to(msg.pair_id).emit("receiveMessage", {
+                senderId: msg.sender_id,
+                message: msg.message
+            });
+
+            // notify sender that the scheduled message was sent
+            io.to(msg.pair_id).emit("scheduledMessageSent", {
+                senderId: msg.sender_id,
+                messageId: msg.id
+            });
+        }
+    } catch (err) {
+        console.error("Scheduled message delivery failed:", err);
+    }
+}, 5000); // check every 5 sec
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
