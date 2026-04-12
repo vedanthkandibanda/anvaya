@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya | Profile</title>
+
+    <link rel="stylesheet" href="../../css/profile.css">
+</head>
+
+<body>
+
+    <div class="profile-bg">
+        <div class="hearts" id="hearts"></div>
+
+        <!-- ☰ MENU -->
+        <div class="top-navbar">
+
+            <span class="back-btn" onclick="goBack()">←</span>
+
+            <h3 class="nav-title">Profile</h3>
+
+            <span id="menuBtn" class="menu-btn">☰</span>
+
+        </div>
+
+        <div class="profile-container">
+
+            <!-- 🥇 IDENTITY -->
+            <div class="profile-card">
+                <img src="../../assets/images/default.png" class="profile-dp" id="profileDp">
+                <h2 id="profileName">Your Name</h2>
+                <p class="bio" id="profileBio">Your bio here...</p>
+                <button class="edit-btn">Edit</button>
+            </div>
+
+            <!-- 🥈 CONNECTION -->
+            <div class="connection-card">
+                <p id="connectionStatus">Connected with ❤️</p>
+                <h3 id="connectionName">Aarohi</h3>
+                <small id="connectionSince">Connected together</small>
+            </div>
+
+            <!-- 🌅 DAILY MESSAGE -->
+            <div class="daily-box">
+                <h3>🌅 Today’s Message</h3>
+                <div id="dailyForm">
+                    <textarea id="dailyInput" placeholder="Write something meaningful..."></textarea>
+                    <button id="saveDaily">Save</button>
+                </div>
+                <div id="dailyPreview" class="daily-preview hidden"></div>
+            </div>
+
+            <!-- 💞 OUR MOMENTS -->
+            <div class="memory-box">
+                <div class="memory-header">
+                    <h3>💞 Our Moments</h3>
+                    <button id="addMemoryBtn">+ Add</button>
+                </div>
+
+                <div id="memoryList">
+                    <!-- dynamic -->
+                </div>
+            </div>
+
+            <!-- ❤️ SMART HUB -->
+            <div class="smart-box">
+                <h3>❤️ Smart Messages</h3>
+
+                <div class="smart-grid">
+                    <div class="smart-item">⏱ Schedule</div>
+                    <div class="smart-item">🎂 Birthday</div>
+                    <div class="smart-item">💌 Surprise</div>
+                    <div class="smart-item">🔒 Open After</div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 🔥 ADD MEMORY MODAL -->
+    <div id="memoryModal" class="modal hidden">
+        <div class="memory-modal">
+            <button class="modal-close" data-close>&times;</button>
+            <h3>💞 Add Memory</h3>
+
+            <input type="date" id="memoryDate">
+            <input type="text" id="memoryTitle" placeholder="Title (e.g. First Date ❤️)">
+            <textarea id="memoryDesc" placeholder="Write what made this day special..."></textarea>
+
+            <button id="saveMemory">Save Memory ❤️</button>
+
+        </div>
+    </div>
+
+    <div id="editProfileModal" class="modal hidden">
+        <div class="memory-modal">
+            <button class="modal-close" data-close>&times;</button>
+            <h3>Edit Profile</h3>
+            <label>Bio</label>
+            <textarea id="editBio" placeholder="Your bio..."></textarea>
+            <label>Interests</label>
+            <input type="text" id="editInterests" placeholder="Your interests">
+            <label>Change DP</label>
+            <input type="file" id="editDpInput" accept="image/*">
+            <button id="saveProfile">Save Changes</button>
+        </div>
+    </div>
+
+    <div id="smartModal" class="modal hidden">
+        <div class="smart-modal">
+            <button class="modal-close" data-close>&times;</button>
+            <button class="modal-close" data-close>&times;</button>
+
+            <h3 id="smartTitle">Smart Message</h3>
+
+            <textarea id="smartText" placeholder="Write something meaningful..."></textarea>
+
+            <input type="datetime-local" id="smartTime">
+
+            <select id="smartType">
+                <option value="">Select type</option>
+                <option value="sad">When sad</option>
+                <option value="inactive">When inactive</option>
+            </select>
+
+            <button id="smartSend">Continue →</button>
+
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ☰ MENU POPUP -->
+    <div id="menuPopup" class="menu-popup hidden">
+        <div class="menu-popup-item" onclick="goToSettings()">⚙️ Go to Settings</div>
+        <div class="menu-popup-item danger" onclick="disconnectFromMenu()">💔 Disconnect</div>
+        <div class="menu-popup-item danger" onclick="logoutFromMenu()">🚪 Logout</div>
+    </div>
+
+    <script src="../../js/main/profile.js"></script>
+
+</body>
+
+</html>

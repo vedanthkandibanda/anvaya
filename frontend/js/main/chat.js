@@ -18,6 +18,17 @@ let rawPairId = localStorage.getItem("pairId");
 let pairId = rawPairId && rawPairId !== "null" && rawPairId !== "undefined" ? rawPairId : null;
 const socket = io("http://localhost:5000");
 
+const preview = document.getElementById("imagePreview");
+const previewImg = document.getElementById("previewImg");
+const addToVaultBtn = document.getElementById("addToVaultBtn");
+const addToVaultModal = document.getElementById("addToVaultModal");
+const saveToVaultBtn = document.getElementById("saveToVault");
+const vaultMemoryDate = document.getElementById("vaultMemoryDate");
+const vaultMemoryTitle = document.getElementById("vaultMemoryTitle");
+const vaultMemoryDesc = document.getElementById("vaultMemoryDesc");
+
+let selectedImageUrl = null;
+
 if (!userId) {
     window.location.href = "../auth/login.html";
 }
@@ -33,6 +44,21 @@ function joinPairRoomIfReady() {
 }
 
 const statusText = document.getElementById("statusText");
+const partnerNameEl = document.getElementById("chatPartnerName");
+const toastContainer = document.getElementById("toastContainer");
+
+function showToast(message, type = "info") {
+    if (!toastContainer) return;
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.innerText = message;
+    toastContainer.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add("visible"));
+    setTimeout(() => {
+        toast.classList.remove("visible");
+        toast.addEventListener("transitionend", () => toast.remove(), { once: true });
+    }, 2400);
+}
 
 socket.on("userOnline", () => {
     statusText.innerText = "Online 🟢";
@@ -77,12 +103,21 @@ backBtn.addEventListener("click", () => {
     window.location.href = "dashboard.html";
 });
 
-function setPartnerInfo(name) {
-    const displayName = name || "Your Person";
+function setPartnerInfo(partner) {
+    const displayName = typeof partner === "string" ? partner : partner?.name || "Your Person";
+    if (partnerNameEl) {
+        partnerNameEl.innerText = displayName;
+    }
     if (partnerStatusEl) {
         partnerStatusEl.innerText = "Connected ❤️";
     }
-    partnerDpEl.src = getPartnerAvatar(displayName);
+    if (partnerDpEl) {
+        if (typeof partner === "object" && partner?.profile_pic) {
+            partnerDpEl.src = partner.profile_pic;
+        } else {
+            partnerDpEl.src = getPartnerAvatar(displayName);
+        }
+    }
 }
 
 function getPartnerAvatar(name) {
@@ -91,31 +126,42 @@ function getPartnerAvatar(name) {
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
+function parseSqlDatetime(value) {
+    if (!value) return null;
+    const iso = value.replace(" ", "T");
+    const date = new Date(iso);
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
 async function fetchPairStatus() {
     if (!userId) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/pair/status/${userId}`);
+        const res = await fetch(`http://localhost:5000/api/user/profile/${userId}`);
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
         const data = await res.json();
 
         if (!data.isConnected) {
-            alert("No active connection found. Please connect from dashboard.");
+            showToast("No active connection found. Please connect from dashboard.", "error");
             window.location.href = "dashboard.html";
             return;
         }
 
-        if (data.partnerName) {
-            setPartnerInfo(data.partnerName);
-            localStorage.setItem("partnerName", data.partnerName);
+        if (data.partner) {
+            setPartnerInfo(data.partner);
+            localStorage.setItem("partnerName", data.partner.name);
         }
 
         if (data.pairId) {
             pairId = data.pairId;
             localStorage.setItem("pairId", data.pairId);
             joinPairRoomIfReady();
+        }
+
+        if (data.user) {
+            localStorage.setItem("userId", data.user.id);
         }
     } catch (err) {
         console.error("Pair status fetch failed", err);
@@ -212,11 +258,16 @@ function createMessageElement(msg) {
     const isOwn = msg.sender_id == userId;
     div.classList.add(isOwn ? "sent" : "received");
 
-    const content = msg.media_url
+    const deliverAt = parseSqlDatetime(msg.deliver_at);
+    const lockedUntil = parseSqlDatetime(msg.locked_until);
+    const now = new Date();
+    const isScheduled = isOwn && deliverAt && now < deliverAt;
+    const isLocked = !isScheduled && lockedUntil && now < lockedUntil;
+
+    const actualContent = msg.media_url
         ? `<img src="http://localhost:5000/uploads/${msg.media_url}" class="chat-img">`
         : `<span>${msg.message || ""}</span>`;
 
-    const isScheduled = isOwn && msg.is_delayed;
     const tickMarkup = isOwn
         ? isScheduled
             ? "⏳ Scheduled"
@@ -225,9 +276,51 @@ function createMessageElement(msg) {
     const statusTick = tickMarkup ? `<small class="tick">${tickMarkup}</small>` : "";
     const reactionHtml = msg.reaction ? `<div class="reaction">${msg.reaction}</div>` : "";
 
+    if (isScheduled) {
+        div.innerHTML = `
+            <div class="msg-content" data-id="${msg.id}">
+                <span>${msg.message || ""} ⏳ Scheduled</span>
+                ${statusTick}
+            </div>
+            ${reactionHtml}
+        `;
+        return div;
+    }
+
+    if (isLocked) {
+        const placeholder = `<span class="locked-msg">🔒 Locked Message</span>`;
+        const realInnerHTML = `
+            <div class="msg-content" data-id="${msg.id}">
+                ${actualContent}
+                ${statusTick}
+            </div>
+            ${reactionHtml}
+        `;
+
+        div.dataset.unlock = lockedUntil.toISOString();
+        div.dataset.text = realInnerHTML;
+        div.innerHTML = `
+            <div class="msg-content locked-placeholder" data-id="${msg.id}">
+                ${placeholder}
+                ${statusTick}
+            </div>
+            ${reactionHtml}
+        `;
+
+        const lockedElement = div.querySelector(".msg-content");
+        if (lockedElement) {
+            lockedElement.addEventListener("click", () => {
+                const seconds = Math.max(0, Math.ceil((lockedUntil.getTime() - new Date().getTime()) / 1000));
+                showToast(`Unlocks in ${seconds} seconds`, "info");
+            });
+        }
+
+        return div;
+    }
+
     div.innerHTML = `
         <div class="msg-content" data-id="${msg.id}">
-            ${content}
+            ${actualContent}
             ${statusTick}
         </div>
         ${reactionHtml}
@@ -245,7 +338,7 @@ async function loadMessages() {
         const data = await res.json();
         chatMessages.innerHTML = "";
         const scheduledMsg = data.find(msg => msg.sender_id == userId && msg.is_delayed == 1);
-        const visibleMessages = data.filter(msg => !(msg.sender_id == userId && msg.is_delayed == 1));
+        const visibleMessages = data.filter(msg => msg.sender_id == userId || msg.is_delayed == 0);
 
         visibleMessages.forEach(msg => {
             chatMessages.appendChild(createMessageElement(msg));
@@ -310,15 +403,19 @@ socket.on("connect", () => {
 });
 
 socket.on("receiveMessage", async (data) => {
-    if (data.senderId == userId) {
+    const senderId = data.senderId ?? data.sender_id;
+    if (senderId == userId) {
         return;
     }
 
-    chatMessages.appendChild(createMessageElement({
-        message: data.message,
-        sender_id: data.senderId,
-        status: "delivered"
-    }));
+    const messageData = {
+        ...data,
+        sender_id: senderId,
+        senderId: senderId,
+        status: data.status || "delivered"
+    };
+
+    chatMessages.appendChild(createMessageElement(messageData));
     scrollChatToBottom();
     await acknowledgeReceived();
     await loadMessages();
@@ -422,15 +519,16 @@ function getTick(status) {
     if (status === "seen") return "✓✓💙";
 }
 
-const preview = document.getElementById("imagePreview");
-const previewImg = document.getElementById("previewImg");
-
 document.addEventListener("click", (e) => {
     if (e.target.classList.contains("chat-img")) {
         preview.classList.remove("hidden");
         previewImg.src = e.target.src;
+        selectedImageUrl = e.target.src;
     } else if (e.target.id === "imagePreview") {
         preview.classList.add("hidden");
+    } else if (e.target.id === "addToVaultBtn") {
+        preview.classList.add("hidden");
+        addToVaultModal.classList.remove("hidden");
     }
 });
 
@@ -483,6 +581,83 @@ reactionBox.addEventListener("click", async (e) => {
 
     reactionBox.classList.add("hidden");
 });
+
+// MODAL CLOSE LOGIC
+const modalCloseButtons = document.querySelectorAll("[data-close]");
+modalCloseButtons.forEach(button => {
+    button.addEventListener("click", (event) => {
+        const modal = event.target.closest(".modal");
+        if (modal) closeModal(modal);
+    });
+});
+
+// Close modal when clicking outside
+document.addEventListener("click", (event) => {
+    document.querySelectorAll(".modal:not(.hidden)").forEach(modal => {
+        if (event.target === modal) {
+            closeModal(modal);
+        }
+    });
+});
+
+function closeModal(modal) {
+    modal.classList.add("hidden");
+}
+
+function extractUploadFileName(url) {
+    if (!url) return "";
+    const marker = "/uploads/";
+    const index = url.indexOf(marker);
+    if (index === -1) return "";
+    return url.slice(index + marker.length);
+}
+
+// SAVE TO VAULT
+saveToVaultBtn.onclick = async () => {
+    const date = vaultMemoryDate.value;
+    const title = vaultMemoryTitle.value;
+    const desc = vaultMemoryDesc.value;
+
+    if (!date || !title || !desc) {
+        showToast("Please fill all fields");
+        return;
+    }
+    if (!pairId) {
+        showToast("Pair not connected", "error");
+        return;
+    }
+    const fileName = extractUploadFileName(selectedImageUrl);
+    if (!fileName) {
+        showToast("Please select an uploaded image", "error");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("pairId", pairId);
+    formData.append("type", "image");
+    formData.append("title", title);
+    formData.append("description", desc);
+    formData.append("memory_date", date);
+    formData.append("file_url", fileName);
+
+    const res = await fetch("http://localhost:5000/api/vault", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: formData
+    });
+
+    if (res.ok) {
+        showToast("Added to vault!");
+        addToVaultModal.classList.add("hidden");
+        vaultMemoryDate.value = "";
+        vaultMemoryTitle.value = "";
+        vaultMemoryDesc.value = "";
+    } else {
+        showToast("Failed to add to vault");
+    }
+};
 
 function updateMessageReaction(messageId, reaction) {
     const msg = document.querySelector(`[data-id="${messageId}"]`);
@@ -937,3 +1112,19 @@ function sendMoment(type) {
 
     showMoment(type); // show locally also
 }
+
+setInterval(() => {
+
+    const messages = document.querySelectorAll(".message");
+
+    messages.forEach(msgEl => {
+
+        const unlockTime = msgEl.dataset.unlock;
+
+        if (unlockTime && new Date(unlockTime) <= new Date()) {
+            msgEl.innerHTML = msgEl.dataset.text;
+        }
+
+    });
+
+}, 3000);

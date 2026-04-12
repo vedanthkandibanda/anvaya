@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya | Settings</title>
+
+    <link rel="stylesheet" href="../../css/settings.css">
+</head>
+
+<body>
+
+    <div class="settings-bg">
+
+        <!-- ❤️ BG -->
+        <div class="hearts" id="hearts"></div>
+
+        <!-- NAV -->
+        <div class="settings-navbar">
+            <span onclick="goBack()">←</span>
+            <h3>Settings</h3>
+            <span></span>
+        </div>
+
+        <!-- SECTIONS -->
+
+        <div class="settings-section">
+            <h4>👤 Account</h4>
+            <div class="item">Edit Profile</div>
+            <div class="item" onclick="openChangePassword()">Change Password</div>
+        </div>
+
+        <div class="settings-section">
+            <h4>❤️ Relationship</h4>
+            <div class="item">View Partner</div>
+            <div class="item danger" onclick="disconnect()">Disconnect</div>
+        </div>
+
+        <div class="settings-section">
+            <h4>🔔 Notifications</h4>
+            <div class="item toggle">
+                Chat Notifications
+                <input type="checkbox" checked>
+            </div>
+            <div class="item toggle">
+                Daily Reminder
+                <input type="checkbox" checked>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h4>🔐 Privacy</h4>
+            <div class="item toggle">
+                Hide Online Status
+                <input type="checkbox">
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h4>⏱ Smart Messages</h4>
+            <div class="item toggle">
+                Enable Smart Features
+                <input type="checkbox" checked>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h4>🌸 Period Mode</h4>
+            <div class="item toggle">
+                Enable Period Mode
+                <input type="checkbox">
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h4>💾 Data / Vault</h4>
+            <div class="item">Manage Memories</div>
+            <div class="item danger">Delete All Memories</div>
+        </div>
+
+        <div class="settings-section">
+            <h4>ℹ️ About App</h4>
+            <div class="item" onclick="openAbout()">How App Works</div>
+        </div>
+
+        <div class="settings-section">
+            <h4>🚪 Account Access</h4>
+            <div class="item danger" onclick="logout()">Logout</div>
+        </div>
+
+    </div>
+
+    <script src="../../js/main/settings.js"></script>
+
+</body>
+
+</html>

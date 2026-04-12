@@ -23,8 +23,8 @@
             <div class="dashboard-nav">
 
                 <div class="nav-user">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="dp">
-                    <span>You</span>
+                    <img id="userDp" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="dp">
+                    <span id="userName">You</span>
                 </div>
 
                 <!-- 💓 HEARTBEAT -->
@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="nav-user">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="dp">
+                    <img id="partnerDp" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="dp">
                 </div>
 
             </div>
@@ -99,6 +99,8 @@
         </div>
 
     </div>
+    <div id="dailyPopup" class="daily-popup hidden"></div>
+    <div id="toastContainer" class="toast-container"></div>
 
     <script src="../../js/main/dashboard.js"></script>
 

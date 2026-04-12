@@ -1,6 +1,23 @@
 const connectionActions = document.getElementById("connectionActions");
 const connectionName = document.getElementById("connectionName");
 const dashboardGrid = document.querySelector(".dashboard-grid");
+const userDpEl = document.getElementById("userDp");
+const partnerDpEl = document.getElementById("partnerDp");
+const userNameEl = document.getElementById("userName");
+const toastContainer = document.getElementById("toastContainer");
+
+function showToast(message, type = "info") {
+    if (!toastContainer) return;
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.innerText = message;
+    toastContainer.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add("visible"));
+    setTimeout(() => {
+        toast.classList.remove("visible");
+        toast.addEventListener("transitionend", () => toast.remove(), { once: true });
+    }, 2400);
+}
 
 /* CURRENT USER */
 const rawUserId = localStorage.getItem("userId");
@@ -20,7 +37,7 @@ async function loadDashboard() {
 
     try {
         const res = await fetch(
-            `http://localhost:5000/api/pair/status/${userId}`
+            `http://localhost:5000/api/user/profile/${userId}`
         );
 
         if (!res.ok) {
@@ -30,17 +47,32 @@ async function loadDashboard() {
         const userData = await res.json();
         console.log("Dashboard data received:", userData);
 
+        if (userData.user) {
+            localStorage.setItem("userId", userData.user.id);
+        }
+        if (userData.pairId) {
+            localStorage.setItem("pairId", userData.pairId);
+        }
+        if (userData.partner?.name) {
+            localStorage.setItem("partnerName", userData.partner.name);
+        }
+
         renderDashboard(userData);
 
     } catch (err) {
         console.error("Dashboard load failed:", err);
-        alert("Dashboard load failed: " + err.message);
+        showToast("Dashboard load failed: " + err.message, "error");
     }
 }
 
 /* RENDER */
 function renderDashboard(userData) {
     console.log("Rendering dashboard with data:", userData);
+
+    if (userData.user) {
+        userNameEl.innerText = userData.user.name || "You";
+        userDpEl.src = userData.user.profile_pic || getAvatar(userData.user.name);
+    }
 
     if (!userData.isConnected) {
         console.log("User not connected, showing search options");
@@ -61,12 +93,17 @@ function renderDashboard(userData) {
     } else {
         console.log("User connected, showing full features");
 
-        connectionName.innerText = userData.partnerName;
-        if (userData.pairId) {
-            localStorage.setItem("pairId", userData.pairId);
+        const partnerName = userData.partner?.name || "Your Person";
+        connectionName.innerText = partnerName;
+
+        if (userData.user) {
+            userNameEl.innerText = userData.user.name || "You";
+            userDpEl.src = userData.user.profile_pic || getAvatar(userData.user.name);
         }
-        if (userData.partnerName) {
-            localStorage.setItem("partnerName", userData.partnerName);
+
+        if (userData.partner) {
+            partnerDpEl.src = userData.partner.profile_pic || getAvatar(userData.partner.name);
+            localStorage.setItem("partnerName", userData.partner.name);
         }
 
         connectionActions.innerHTML = `
@@ -84,6 +121,12 @@ function renderDashboard(userData) {
             <div class="grid-item">👤 Profile</div>
         `;
     }
+}
+
+function getAvatar(name) {
+    const initial = name?.trim()?.charAt(0).toUpperCase() || "A";
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><circle cx="40" cy="40" r="40" fill="#ff4d6d"/><text x="50%" y="55%" font-size="36" text-anchor="middle" fill="#fff" font-family="Segoe UI, sans-serif" dy=".1em">${initial}</text></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
 /* HEARTS */
@@ -117,7 +160,7 @@ function closeSearchModal() {
 
 /* DISCONNECT */
 function disconnect() {
-    alert("Disconnect feature coming soon!");
+    showToast("Disconnect feature coming soon!", "info");
 }
 
 /* LIVE SEARCH */
@@ -192,16 +235,16 @@ async function sendRequest(receiverId) {
         const data = await res.json();
 
         if (res.ok) {
-            alert(data.message);
+            showToast(data.message, "success");
             closeSearchModal();
             loadDashboard(); // Refresh dashboard
         } else {
-            alert(data.message || "Failed to send request");
+            showToast(data.message || "Failed to send request", "error");
         }
 
     } catch (err) {
         console.error("Send request failed:", err);
-        alert("Failed to send request");
+        showToast("Failed to send request", "error");
     }
 }
 
@@ -289,11 +332,11 @@ async function acceptRequest(requestId, senderId, receiverId) {
             return;
         }
 
-        alert(data.message || "Connection accepted. Please open chat from the dashboard.");
+        showToast(data.message || "Connection accepted. Please open chat from the dashboard.", "success");
         location.reload();
     } catch (err) {
         console.error("Accept request failed:", err);
-        alert(err.message || "Accept request failed");
+        showToast(err.message || "Accept request failed", "error");
         viewRequests();
     }
 }
@@ -316,7 +359,7 @@ async function rejectRequest(requestId) {
 
     const data = await res.json();
 
-    alert(data.message);
+    showToast(data.message || "Request rejected", "info");
     viewRequests();
 }
 
@@ -344,6 +387,54 @@ dashboardGrid.addEventListener("click", function(event) {
     } else if (text.includes("Chat")) {
         window.location.href = "chat.html";
     } else {
-        alert(text + " feature coming soon!");
+        showToast(text + " feature coming soon!", "info");
     }
+});
+
+async function loadDailyMessage() {
+
+    const pairId = localStorage.getItem("pairId");
+
+    if (!pairId) return;
+
+    try {
+
+        const res = await fetch(`http://localhost:5000/api/profile/daily/${pairId}`);
+        const data = await res.json();
+
+        const popup = document.getElementById("dailyPopup");
+
+        popup.classList.remove("hidden");
+
+        if (data) {
+
+            popup.innerHTML = `
+                <h4>❤️ Today’s Message</h4>
+                <p>${data.message}</p>
+            `;
+
+            // auto hide
+            setTimeout(() => {
+                popup.classList.add("hidden");
+            }, 4000);
+
+        } else {
+
+            popup.innerHTML = `
+                <h4>🌅 Daily Message</h4>
+                <p>What's today's message?</p>
+            `;
+
+            popup.onclick = () => {
+                window.location.href = "profile.html";
+            };
+        }
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+window.addEventListener("load", () => {
+    loadDailyMessage();
 });

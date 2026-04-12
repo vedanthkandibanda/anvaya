@@ -1,8 +1,11 @@
 import express from "express";
-import { profileSetup } from "../controllers/userController.js";
+import upload from "../middleware/uploadMiddleware.js";
+import { profileSetup, getUserProfile, updateUserProfile } from "../controllers/userController.js";
 
 const router = express.Router();
 
-router.post("/profile-setup", profileSetup);
+router.get("/profile/:userId", getUserProfile);
+router.post("/profile-setup", upload.single("profilePic"), profileSetup);
+router.post("/profile-update", upload.single("profilePic"), updateUserProfile);
 
 export default router;

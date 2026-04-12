@@ -24,9 +24,10 @@
                 <button class="back-btn">←</button>
 
                 <div class="partner-info">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="partner-dp">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 45 45'%3E%3Ccircle cx='22.5' cy='22.5' r='22' fill='%23ff4d6d'/%3E%3C/svg%3E" class="partner-dp" id="chatPartnerDp">
                     <div>
                         <div class="chat-title-row">
+                            <h3 id="chatPartnerName">Your Person</h3>
                             <span id="statusText">Online</span>
                         </div>
                         <p id="partnerStatusText">Connected ❤️</p>
@@ -100,6 +101,7 @@
 
     <div id="imagePreview" class="image-preview hidden">
     <img id="previewImg">
+    <button id="addToVaultBtn" class="add-to-vault-btn">Add to Vault 📸</button>
 </div>
 <div id="reactionBox" class="reaction-box hidden">
     <span>❤️</span>
@@ -107,6 +109,19 @@
     <span>😢</span>
     <span>😂</span>
 </div>
+
+<!-- 🔥 ADD TO VAULT MODAL -->
+<div id="addToVaultModal" class="modal hidden">
+    <div class="modal-content">
+        <button class="modal-close" data-close>&times;</button>
+        <h3>Add to Vault 💞</h3>
+        <input type="date" id="vaultMemoryDate">
+        <input type="text" id="vaultMemoryTitle" placeholder="Title">
+        <textarea id="vaultMemoryDesc" placeholder="Write something meaningful..."></textarea>
+        <button id="saveToVault">Save ❤️</button>
+    </div>
+</div>
+<div id="toastContainer" class="toast-container"></div>
 
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
     <script src="../../js/main/chat.js"></script>

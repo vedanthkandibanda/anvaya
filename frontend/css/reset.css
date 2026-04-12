@@ -1,0 +1,39 @@
+body {
+    font-family: sans-serif;
+    background: #ffe5ec;
+}
+
+.container {
+    max-width: 320px;
+    margin: 100px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.back-btn {
+    cursor: pointer;
+    font-size: 22px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #ff4d6d;
+    color: white;
+    border: none;
+}

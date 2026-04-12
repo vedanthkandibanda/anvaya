@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anvaya | Vault</title>
+
+    <link rel="stylesheet" href="../../css/vault.css">
+</head>
+
+<body>
+
+<div class="vault-bg">
+
+    <!-- ❤️ BACKGROUND -->
+    <div class="hearts" id="hearts"></div>
+
+    <!-- 🔝 NAVBAR -->
+    <div class="vault-navbar">
+        <span class="back-btn" onclick="goBack()">←</span>
+        <h3>Vault</h3>
+        <span class="nav-spacer"></span>
+    </div>
+
+    <!-- HEADER -->
+    <div class="vault-header">
+        <h2>📸 Your Memories</h2>
+        <p>A place for your shared moments ❤️</p>
+    </div>
+
+    <!-- ACTION -->
+    <div class="vault-actions">
+        <button id="uploadBtn">+ Add Memory</button>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="empty-state">
+        <p>💞 No memories yet</p>
+        <small>Start capturing your moments ❤️</small>
+    </div>
+
+    <!-- TIMELINE -->
+    <div id="vaultTimeline" class="vault-timeline"></div>
+
+</div>
+
+<!-- 🔥 MODAL -->
+<div id="vaultModal" class="modal hidden">
+    <div class="modal-content">
+
+        <button class="modal-close" data-close>&times;</button>
+
+        <h3>Add Memory 💞</h3>
+
+        <select id="memoryType">
+            <option value="image">📷 Image</option>
+            <option value="video">🎥 Video</option>
+            <option value="text">📝 Text</option>
+        </select>
+
+        <input type="date" id="memoryDate">
+        <input type="text" id="memoryTitle" placeholder="Title">
+
+        <textarea id="memoryDesc" placeholder="Write something meaningful..."></textarea>
+
+        <input type="file" id="memoryFile">
+
+        <button id="saveMemory">Save ❤️</button>
+
+    </div>
+</div>
+
+<!-- ✏️ EDIT MODAL -->
+<div id="editVaultModal" class="modal hidden">
+    <div class="modal-content">
+
+        <button class="modal-close" data-close>&times;</button>
+
+        <h3>Edit Memory 💞</h3>
+
+        <select id="editMemoryType">
+            <option value="image">📷 Image</option>
+            <option value="video">🎥 Video</option>
+            <option value="text">📝 Text</option>
+        </select>
+
+        <input type="date" id="editMemoryDate">
+        <input type="text" id="editMemoryTitle" placeholder="Title">
+
+        <textarea id="editMemoryDesc" placeholder="Write something meaningful..."></textarea>
+
+        <input type="file" id="editMemoryFile">
+
+        <button id="updateMemory">Save Changes ❤️</button>
+
+    </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="../../js/main/vault.js"></script>
+
+</body>
+</html>

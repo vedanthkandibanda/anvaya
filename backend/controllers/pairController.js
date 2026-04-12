@@ -228,3 +228,45 @@ export const rejectRequest = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
+export const disconnectPair = async (req, res) => {
+    try {
+        const { pairId, userId } = req.body;
+
+        if (!pairId || !userId) {
+            return res.status(400).json({ message: "pairId and userId required" });
+        }
+
+        /* Verify user actually belongs to this pair */
+        const [pairs] = await db.execute(
+            `SELECT * FROM pairs WHERE id = ? AND (user_one = ? OR user_two = ?)`,
+            [pairId, userId, userId]
+        );
+
+        if (pairs.length === 0) {
+            return res.status(403).json({ message: "Not part of this pair" });
+        }
+
+        /* Delete all vault memories for this pair */
+        await db.execute(`DELETE FROM vault WHERE pair_id = ?`, [pairId]);
+
+        /* Delete all messages for this pair */
+        await db.execute(`DELETE FROM messages WHERE pair_id = ?`, [pairId]);
+
+        /* Delete all pair requests between these users */
+        const pair = pairs[0];
+        await db.execute(
+            `DELETE FROM pair_requests WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)`,
+            [pair.user_one, pair.user_two, pair.user_two, pair.user_one]
+        );
+
+        /* Delete the pair itself */
+        await db.execute(`DELETE FROM pairs WHERE id = ?`, [pairId]);
+
+        res.json({ message: "Disconnected successfully" });
+
+    } catch (err) {
+        console.log("DISCONNECT ERROR:", err);
+        res.status(500).json({ message: "Server error" });
+    }
+};

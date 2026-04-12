@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
+import multer from "multer";
 
 
 import db from "./config/dbConfig.js";
@@ -10,6 +11,8 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import pairRoutes from "./routes/pairRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import profileRoutes from "./routes/profileRoutes.js";
+import vaultRoutes from "./routes/vaultRoutes.js";
 
 dotenv.config();
 
@@ -22,7 +25,22 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/pair", pairRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/uploads", express.static("uploads"));
 app.use("/uploads", express.static("backend/uploads"));
+app.use("/api/profile", profileRoutes);
+app.use("/api/vault", vaultRoutes);
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname);
+    }
+});
+
+export const upload = multer({ storage });
 
 const server = http.createServer(app);
 
@@ -104,6 +122,33 @@ setInterval(async () => {
         console.error("Scheduled message delivery failed:", err);
     }
 }, 5000); // check every 5 sec
+
+setInterval(async () => {
+
+    const [messages] = await db.query(`
+        SELECT * FROM messages 
+        WHERE deliver_at IS NOT NULL 
+        AND deliver_at <= NOW()
+        AND status = 'sent'
+    `);
+
+    for (let msg of messages) {
+
+        // update status → delivered
+        await db.query(
+            "UPDATE messages SET status='delivered' WHERE id=?",
+            [msg.id]
+        );
+
+        // send to chat (real-time) with a normalized payload
+        io.to(msg.pair_id).emit("receiveMessage", {
+            ...msg,
+            senderId: msg.sender_id,
+            sender_id: msg.sender_id
+        });
+    }
+
+}, 5000); // every 5 seconds
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

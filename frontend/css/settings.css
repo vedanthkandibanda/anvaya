@@ -1,0 +1,72 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI";
+}
+
+.settings-bg {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+    padding: 15px;
+}
+
+/* NAV */
+.settings-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* SECTION */
+.settings-section {
+    background: white;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 15px;
+}
+
+.settings-section h4 {
+    margin-bottom: 8px;
+    color: #ff4d6d;
+}
+
+/* ITEM */
+.item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+/* TOGGLE */
+.toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* DANGER */
+.danger {
+    color: red;
+}
+
+/* HEARTS */
+.hearts span {
+    position: absolute;
+    opacity: 0.1;
+    animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(100vh);
+    }
+
+    100% {
+        transform: translateY(-100vh);
+    }
+}

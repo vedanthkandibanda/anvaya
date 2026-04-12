@@ -5,7 +5,8 @@ import {
     sendPairRequest,
     getRequests,
     acceptRequest,
-    rejectRequest
+    rejectRequest,
+    disconnectPair
 } from "../controllers/pairController.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.post("/request", sendPairRequest);
 router.get("/requests/:userId", getRequests);
 router.post("/accept-request", acceptRequest);
 router.post("/reject-request", rejectRequest);
+router.post("/disconnect", disconnectPair);
 
 export default router;

@@ -157,3 +157,55 @@ export const loginUser = async (req, res) => {
         });
     }
 };
+
+export const resetPassword = async (req, res) => {
+    try {
+        let { email, password } = req.body;
+
+        email = email?.trim().toLowerCase();
+
+        if (!email || !password) {
+            return res.status(400).json({
+                status: "error",
+                message: "Email and password are required"
+            });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({
+                status: "error",
+                message: "Password must be at least 8 characters"
+            });
+        }
+
+        const [users] = await db.execute(
+            "SELECT id FROM users WHERE email = ?",
+            [email]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({
+                status: "error",
+                message: "Email not found"
+            });
+        }
+
+        const hashed = await bcrypt.hash(password, 10);
+
+        await db.execute(
+            "UPDATE users SET password = ? WHERE email = ?",
+            [hashed, email]
+        );
+
+        return res.json({
+            status: "success",
+            message: "Password updated"
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            status: "error",
+            message: "Server error"
+        });
+    }
+};
