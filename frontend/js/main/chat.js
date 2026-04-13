@@ -93,6 +93,15 @@ moodBtn.addEventListener("click", () => {
     moodPopup.classList.toggle("hidden");
 });
 
+moodPopup.querySelectorAll("button[data-theme]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const theme = button.dataset.theme;
+        if (theme) {
+            setMoodTheme(theme);
+        }
+    });
+});
+
 document.addEventListener("click", (event) => {
     if (!moodPopup.contains(event.target) && !moodBtn.contains(event.target)) {
         moodPopup.classList.add("hidden");
@@ -180,9 +189,40 @@ function setMoodTheme(theme) {
         "theme-period"
     );
     chatContainer.classList.add(`theme-${theme}`);
+    applyMoodMessageBackground(theme);
     localStorage.setItem("chatMoodTheme", theme);
     moodPopup.classList.add("hidden");
     renderMoodAnimation(theme);
+}
+
+function applyMoodMessageBackground(theme) {
+    const map = {
+        love: "linear-gradient(180deg, rgba(255, 241, 245, 0.9), rgba(255, 229, 236, 0.9))",
+        romantic: "linear-gradient(180deg, rgba(43, 45, 66, 0.12), rgba(141, 153, 174, 0.24))",
+        sad: "linear-gradient(180deg, rgba(219, 234, 254, 0.85), rgba(191, 219, 254, 0.85))",
+        angry: "linear-gradient(180deg, rgba(254, 202, 202, 0.82), rgba(248, 113, 113, 0.32))",
+        period: "linear-gradient(180deg, rgba(255, 228, 230, 0.9), rgba(253, 164, 175, 0.35))"
+    };
+
+    const overlayMap = {
+        love: "radial-gradient(circle at 20% 20%, rgba(255, 105, 180, 0.20), transparent 35%), radial-gradient(circle at 80% 80%, rgba(255, 77, 109, 0.18), transparent 36%)",
+        romantic: "linear-gradient(180deg, rgba(18, 24, 38, 0.42), rgba(58, 68, 96, 0.30)), radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.10), transparent 20%)",
+        sad: "linear-gradient(180deg, rgba(116, 150, 210, 0.18), rgba(191, 219, 254, 0.22))",
+        angry: "linear-gradient(180deg, rgba(255, 120, 120, 0.16), rgba(215, 38, 61, 0.20))",
+        period: "linear-gradient(180deg, rgba(255, 192, 203, 0.16), rgba(253, 164, 175, 0.22))"
+    };
+
+    const blurMap = {
+        love: "blur(6px)",
+        romantic: "blur(8px)",
+        sad: "blur(7px)",
+        angry: "blur(6px)",
+        period: "blur(7px)"
+    };
+
+    chatMessages.style.background = map[theme] || "";
+    moodLayer.style.background = overlayMap[theme] || "transparent";
+    moodLayer.style.backdropFilter = blurMap[theme] || "blur(0px)";
 }
 
 const fileInput = document.getElementById("fileInput");
@@ -230,18 +270,26 @@ fileInput.addEventListener("change", async () => {
 
 function renderMoodAnimation(theme) {
     moodLayer.innerHTML = "";
-    let symbol = "❤️";
-    if (theme === "romantic") symbol = "✨";
-    if (theme === "sad") symbol = "🌧";
-    if (theme === "angry") symbol = "⚡";
-    if (theme === "period") symbol = "🌸";
-    for (let i = 0; i < 20; i++) {
+    const moodMap = {
+        love: ["❤️", "💕", "💗"],
+        romantic: ["🌙", "✨", "⭐"],
+        sad: ["🌧", "💧", "☁️"],
+        angry: ["⚡", "🔥", "💥"],
+        period: ["🌸", "🩷", "✨"]
+    };
+
+    const symbols = moodMap[theme] || ["✨"];
+    const particleCount = theme === "romantic" ? 26 : 20;
+
+    for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement("span");
         particle.classList.add("mood-particle");
-        particle.innerHTML = symbol;
-        particle.style.left = Math.random() * 100 + "vw";
-        particle.style.fontSize = (Math.random() * 12 + 14) + "px";
-        particle.style.animationDuration = (Math.random() * 5 + 5) + "s";
+        particle.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+        particle.style.left = Math.random() * 100 + "%";
+        particle.style.top = "calc(100% + 20px)";
+        particle.style.fontSize = (Math.random() * 10 + 14) + "px";
+        particle.style.animationDuration = (Math.random() * 6 + 7) + "s";
+        particle.style.animationDelay = (Math.random() * 3) + "s";
         moodLayer.appendChild(particle);
     }
 }
@@ -446,8 +494,7 @@ async function acknowledgeReceived() {
 async function initChatPage() {
     const savedTheme = localStorage.getItem("chatMoodTheme");
     if (savedTheme) {
-        chatContainer.classList.add(`theme-${savedTheme}`);
-        renderMoodAnimation(savedTheme);
+        setMoodTheme(savedTheme);
     }
 
     const storedPartnerName = localStorage.getItem("partnerName");
@@ -536,6 +583,11 @@ const reactionBox = document.getElementById("reactionBox");
 
 let selectedMessageId = null;
 
+function hideReactionBox() {
+    selectedMessageId = null;
+    reactionBox.classList.add("hidden");
+}
+
 document.addEventListener("click", (e) => {
     if (reactionBox.contains(e.target)) {
         return;
@@ -544,6 +596,12 @@ document.addEventListener("click", (e) => {
     const msg = e.target.closest(".msg-content");
 
     if (msg && msg.dataset.id) {
+        const isSameMessage = selectedMessageId === msg.dataset.id && !reactionBox.classList.contains("hidden");
+        if (isSameMessage) {
+            hideReactionBox();
+            return;
+        }
+
         selectedMessageId = msg.dataset.id;
 
         reactionBox.style.top = e.pageY + "px";
@@ -551,16 +609,19 @@ document.addEventListener("click", (e) => {
 
         reactionBox.classList.remove("hidden");
     } else {
-        selectedMessageId = null;
-        reactionBox.classList.add("hidden");
+        hideReactionBox();
     }
 });
 
 reactionBox.addEventListener("click", async (e) => {
-    const emoji = e.target.innerText;
+    const emojiTarget = e.target.closest("span");
+    const emoji = emojiTarget?.innerText;
     if (!emoji || !selectedMessageId) return;
 
-    const msg = document.querySelector(`[data-id="${selectedMessageId}"]`);
+    const messageId = selectedMessageId;
+    hideReactionBox();
+
+    const msg = document.querySelector(`[data-id="${messageId}"]`);
     const currentReaction = msg?.parentElement?.querySelector(".reaction")?.innerText || null;
     const reaction = currentReaction === emoji ? null : emoji;
 
@@ -570,16 +631,20 @@ reactionBox.addEventListener("click", async (e) => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            messageId: selectedMessageId,
+            messageId,
             reaction
         })
     });
 
     if (response.ok) {
-        updateMessageReaction(selectedMessageId, reaction);
+        updateMessageReaction(messageId, reaction);
     }
+});
 
-    reactionBox.classList.add("hidden");
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+        hideReactionBox();
+    }
 });
 
 // MODAL CLOSE LOGIC

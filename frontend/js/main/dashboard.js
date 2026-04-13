@@ -1,10 +1,22 @@
 const connectionActions = document.getElementById("connectionActions");
 const connectionName = document.getElementById("connectionName");
 const dashboardGrid = document.querySelector(".dashboard-grid");
+const connectionBox = document.querySelector(".connection-box");
 const userDpEl = document.getElementById("userDp");
 const partnerDpEl = document.getElementById("partnerDp");
 const userNameEl = document.getElementById("userName");
 const toastContainer = document.getElementById("toastContainer");
+const connectionMenuBtn = document.getElementById("connectionMenuBtn");
+const connectionBgModal = document.getElementById("connectionBgModal");
+const closeConnectionBgModalBtn = document.getElementById("closeConnectionBgModal");
+const bgOptions = document.getElementById("bgOptions");
+const bgUploadBlock = document.getElementById("bgUploadBlock");
+const bgImageInput = document.getElementById("bgImageInput");
+const saveBgBtn = document.getElementById("saveBgBtn");
+const changeBgBtn = document.getElementById("changeBgBtn");
+const resetBgBtn = document.getElementById("resetBgBtn");
+
+let hasConnectionBackground = false;
 
 function showToast(message, type = "info") {
     if (!toastContainer) return;
@@ -90,6 +102,9 @@ function renderDashboard(userData) {
             <div class="grid-item">👤 Profile</div>
         `;
 
+        clearConnectionBackground();
+        connectionMenuBtn.classList.add("hidden");
+
     } else {
         console.log("User connected, showing full features");
 
@@ -120,8 +135,144 @@ function renderDashboard(userData) {
             <div class="grid-item">⚙️ Settings</div>
             <div class="grid-item">👤 Profile</div>
         `;
+
+        connectionMenuBtn.classList.remove("hidden");
+        loadConnectionBackground();
     }
 }
+
+function applyConnectionBackground(url) {
+    connectionBox.style.setProperty("--connection-bg-image", `url('${url}')`);
+    connectionBox.classList.add("has-custom-bg");
+    hasConnectionBackground = true;
+}
+
+function clearConnectionBackground() {
+    connectionBox.style.removeProperty("--connection-bg-image");
+    connectionBox.classList.remove("has-custom-bg");
+    hasConnectionBackground = false;
+}
+
+async function loadConnectionBackground() {
+    const pairId = localStorage.getItem("pairId");
+    if (!pairId) {
+        clearConnectionBackground();
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/pair/connection-bg/${pairId}`);
+        if (!res.ok) {
+            clearConnectionBackground();
+            return;
+        }
+
+        const data = await res.json();
+        if (data.imageUrl) {
+            applyConnectionBackground(data.imageUrl);
+            return;
+        }
+
+        clearConnectionBackground();
+    } catch (err) {
+        console.error("Connection background load failed:", err);
+        clearConnectionBackground();
+    }
+}
+
+function openConnectionBgModal() {
+    if (!localStorage.getItem("pairId")) {
+        showToast("Connect with a partner first", "error");
+        return;
+    }
+
+    bgImageInput.value = "";
+    if (hasConnectionBackground) {
+        bgOptions.classList.remove("hidden");
+        bgUploadBlock.classList.add("hidden");
+    } else {
+        bgOptions.classList.add("hidden");
+        bgUploadBlock.classList.remove("hidden");
+    }
+
+    connectionBgModal.classList.remove("hidden");
+}
+
+function closeConnectionBgModal() {
+    connectionBgModal.classList.add("hidden");
+}
+
+connectionMenuBtn.addEventListener("click", openConnectionBgModal);
+closeConnectionBgModalBtn.addEventListener("click", closeConnectionBgModal);
+connectionBgModal.addEventListener("click", (event) => {
+    if (event.target === connectionBgModal) {
+        closeConnectionBgModal();
+    }
+});
+
+changeBgBtn.addEventListener("click", () => {
+    bgOptions.classList.add("hidden");
+    bgUploadBlock.classList.remove("hidden");
+});
+
+saveBgBtn.addEventListener("click", async () => {
+    const pairId = localStorage.getItem("pairId");
+    const image = bgImageInput.files[0];
+
+    if (!pairId) {
+        showToast("Connection not found", "error");
+        return;
+    }
+
+    if (!image) {
+        showToast("Choose an image first", "error");
+        return;
+    }
+
+    if (!image.type.startsWith("image/")) {
+        showToast("Only image files are allowed", "error");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("pairId", pairId);
+    formData.append("userId", userId);
+    formData.append("image", image);
+
+    const res = await fetch("http://localhost:5000/api/pair/connection-bg", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        showToast(data.message || "Unable to save image", "error");
+        return;
+    }
+
+    applyConnectionBackground(data.imageUrl);
+    closeConnectionBgModal();
+    showToast("Background saved", "success");
+});
+
+resetBgBtn.addEventListener("click", async () => {
+    const pairId = localStorage.getItem("pairId");
+    if (!pairId) return;
+
+    const res = await fetch(`http://localhost:5000/api/pair/connection-bg/${pairId}?userId=${userId}`, {
+        method: "DELETE"
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        showToast(data.message || "Unable to reset background", "error");
+        return;
+    }
+
+    clearConnectionBackground();
+    closeConnectionBgModal();
+    showToast("Background reset", "success");
+});
 
 function getAvatar(name) {
     const initial = name?.trim()?.charAt(0).toUpperCase() || "A";
@@ -378,7 +529,9 @@ dashboardGrid.addEventListener("click", function(event) {
     if (!item) return;
 
     const text = item.textContent;
-    if (text.includes("Vault")) {
+    if (text.includes("Listen")) {
+        window.location.href = "music.html";
+    } else if (text.includes("Vault")) {
         window.location.href = "vault.html";
     } else if (text.includes("Settings")) {
         window.location.href = "settings.html";

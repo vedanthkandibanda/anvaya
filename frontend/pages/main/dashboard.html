@@ -40,6 +40,7 @@
 
             <!-- CONNECTION -->
             <div class="connection-box">
+                <button id="connectionMenuBtn" class="connection-menu-btn hidden" type="button">⋮</button>
 
                 <p class="connection-title">Your Connection</p>
                 <h3 id="connectionName">Not Connected</h3>
@@ -99,6 +100,27 @@
         </div>
 
     </div>
+
+        <div id="connectionBgModal" class="search-modal hidden">
+            <div class="search-content connection-bg-content">
+                <div class="search-header">
+                    <h3>Connection Background</h3>
+                    <span id="closeConnectionBgModal" class="close-btn">✖</span>
+                </div>
+
+                <div id="bgOptions" class="hidden">
+                    <button id="changeBgBtn" type="button">Change Image</button>
+                    <button id="resetBgBtn" type="button">Reset</button>
+                </div>
+
+                <div id="bgUploadBlock">
+                    <input id="bgImageInput" type="file" accept="image/*">
+                    <button id="saveBgBtn" type="button">Save</button>
+                    <small class="bg-help">Image will be softly blurred so text remains readable.</small>
+                </div>
+            </div>
+        </div>
+
     <div id="dailyPopup" class="daily-popup hidden"></div>
     <div id="toastContainer" class="toast-container"></div>
 

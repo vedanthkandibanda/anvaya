@@ -1,4 +1,24 @@
 import db from "../db.js";
+import fs from "fs";
+import path from "path";
+
+async function ensureConnectionBgTable() {
+    await db.execute(`
+        CREATE TABLE IF NOT EXISTS pair_connection_backgrounds (
+            pair_id INT PRIMARY KEY,
+            image_url VARCHAR(255) NOT NULL,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    `);
+}
+
+function toPublicUploadUrl(value) {
+    if (!value) return null;
+    if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("data:")) {
+        return value;
+    }
+    return `http://localhost:5000/uploads/${value}`;
+}
 
 export const getConnectionStatus = async (req, res) => {
     try {
@@ -268,5 +288,124 @@ export const disconnectPair = async (req, res) => {
     } catch (err) {
         console.log("DISCONNECT ERROR:", err);
         res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const getConnectionBackground = async (req, res) => {
+    try {
+        await ensureConnectionBgTable();
+
+        const { pairId } = req.params;
+        const [rows] = await db.execute(
+            "SELECT image_url FROM pair_connection_backgrounds WHERE pair_id = ?",
+            [pairId]
+        );
+
+        if (rows.length === 0) {
+            return res.json({ imageUrl: null });
+        }
+
+        return res.json({ imageUrl: toPublicUploadUrl(rows[0].image_url) });
+    } catch (err) {
+        console.log("GET CONNECTION BG ERROR:", err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const saveConnectionBackground = async (req, res) => {
+    try {
+        await ensureConnectionBgTable();
+
+        const { pairId, userId } = req.body || {};
+        if (!pairId || !userId) {
+            return res.status(400).json({ message: "pairId and userId required" });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({ message: "Image is required" });
+        }
+
+        if (!req.file.mimetype || !req.file.mimetype.startsWith("image/")) {
+            return res.status(400).json({ message: "Only image files are allowed" });
+        }
+
+        const [pairs] = await db.execute(
+            "SELECT id FROM pairs WHERE id = ? AND (user_one = ? OR user_two = ?)",
+            [pairId, userId, userId]
+        );
+
+        if (pairs.length === 0) {
+            return res.status(403).json({ message: "Not authorized for this pair" });
+        }
+
+        const [existingRows] = await db.execute(
+            "SELECT image_url FROM pair_connection_backgrounds WHERE pair_id = ?",
+            [pairId]
+        );
+
+        const nextFile = req.file.filename;
+
+        await db.execute(
+            `INSERT INTO pair_connection_backgrounds (pair_id, image_url)
+             VALUES (?, ?)
+             ON DUPLICATE KEY UPDATE image_url = VALUES(image_url)`,
+            [pairId, nextFile]
+        );
+
+        if (existingRows.length > 0 && existingRows[0].image_url && existingRows[0].image_url !== nextFile) {
+            const oldPath = path.join(process.cwd(), "uploads", existingRows[0].image_url);
+            if (fs.existsSync(oldPath)) {
+                fs.unlinkSync(oldPath);
+            }
+        }
+
+        return res.json({ imageUrl: toPublicUploadUrl(nextFile) });
+    } catch (err) {
+        console.log("SAVE CONNECTION BG ERROR:", err);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const resetConnectionBackground = async (req, res) => {
+    try {
+        await ensureConnectionBgTable();
+
+        const { pairId } = req.params;
+        const { userId } = req.query;
+
+        if (!pairId || !userId) {
+            return res.status(400).json({ message: "pairId and userId required" });
+        }
+
+        const [pairs] = await db.execute(
+            "SELECT id FROM pairs WHERE id = ? AND (user_one = ? OR user_two = ?)",
+            [pairId, userId, userId]
+        );
+
+        if (pairs.length === 0) {
+            return res.status(403).json({ message: "Not authorized for this pair" });
+        }
+
+        const [existingRows] = await db.execute(
+            "SELECT image_url FROM pair_connection_backgrounds WHERE pair_id = ?",
+            [pairId]
+        );
+
+        await db.execute(
+            "DELETE FROM pair_connection_backgrounds WHERE pair_id = ?",
+            [pairId]
+        );
+
+        if (existingRows.length > 0 && existingRows[0].image_url) {
+            const oldPath = path.join(process.cwd(), "uploads", existingRows[0].image_url);
+            if (fs.existsSync(oldPath)) {
+                fs.unlinkSync(oldPath);
+            }
+        }
+
+        return res.json({ message: "Connection background reset" });
+    } catch (err) {
+        console.log("RESET CONNECTION BG ERROR:", err);
+        return res.status(500).json({ message: "Server error" });
     }
 };

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Listen Together</title>
+
+<link rel="stylesheet" href="../../css/music.css">
+</head>
+
+<body>
+
+<div class="music-container">
+
+    <!-- NAV -->
+    <div class="navbar">
+        <span onclick="goBack()">←</span>
+        <h3>Listen Together</h3>
+        <span></span>
+    </div>
+
+    <!-- EMPTY -->
+    <div id="emptyState" class="empty">
+        <p>No songs available 🎧</p>
+        <small>Add songs to start listening</small>
+    </div>
+
+    <div class="upload-box">
+
+        <input type="file" id="songFile" accept="audio/*">
+    <input type="text" id="songName" placeholder="Song name">
+
+    <button onclick="uploadSong()">Upload</button>
+
+        <small>Only audio files are supported (mp3, wav, m4a, ogg)</small>
+
+</div>
+
+    <!-- SONG LIST -->
+    <div id="songList" class="song-list"></div>
+
+    <!-- NOW PLAYING -->
+    <div id="playerBox" class="player hidden">
+
+    <div class="now-playing-card">
+
+        <h4 id="nowPlaying">🎧 Not Playing</h4>
+
+        <div class="progress-bar">
+            <div id="progress"></div>
+        </div>
+
+        <audio id="audioPlayer"></audio>
+
+        <div class="controls">
+            <button onclick="playCurrent()">▶</button>
+            <button onclick="pauseCurrent()">⏸</button>
+        </div>
+
+        <p id="sessionText">Playing solo</p>
+
+    </div>
+
+</div>
+
+</div>
+<div id="invitePopup" class="invite hidden">
+    <p>Your partner started music 🎧</p>
+    <button onclick="joinMusic()">Join ❤️</button>
+    <button onclick="closeInvite()">Ignore</button>
+</div>
+
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="../../js/main/music.js"></script>
+
+</body>
+</html>

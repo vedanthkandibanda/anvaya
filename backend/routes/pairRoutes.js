@@ -1,4 +1,5 @@
 import express from "express";
+import upload from "../middleware/uploadMiddleware.js";
 import {
     getConnectionStatus,
     searchUsers,
@@ -6,7 +7,10 @@ import {
     getRequests,
     acceptRequest,
     rejectRequest,
-    disconnectPair
+    disconnectPair,
+    getConnectionBackground,
+    saveConnectionBackground,
+    resetConnectionBackground
 } from "../controllers/pairController.js";
 
 const router = express.Router();
@@ -14,6 +18,9 @@ const router = express.Router();
 router.get("/status/:userId", getConnectionStatus);
 router.get("/search", searchUsers);
 router.post("/request", sendPairRequest);
+router.get("/connection-bg/:pairId", getConnectionBackground);
+router.post("/connection-bg", upload.single("image"), saveConnectionBackground);
+router.delete("/connection-bg/:pairId", resetConnectionBackground);
 
 router.get("/requests/:userId", getRequests);
 router.post("/accept-request", acceptRequest);

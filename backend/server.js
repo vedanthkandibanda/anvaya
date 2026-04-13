@@ -13,6 +13,7 @@ import pairRoutes from "./routes/pairRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
 import vaultRoutes from "./routes/vaultRoutes.js";
+import musicRoutes from "./routes/musicRoutes.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/uploads", express.static("backend/uploads"));
 app.use("/api/profile", profileRoutes);
 app.use("/api/vault", vaultRoutes);
+app.use("/api/music", musicRoutes);
 
 
 const storage = multer.diskStorage({
@@ -88,6 +90,21 @@ io.on("connection", (socket) => {
 
     socket.on("sendMoment", (data) => {
     socket.to(data.pairId).emit("receiveMoment", data);
+    });
+
+    /* INVITE */
+    socket.on("musicInvite", (data) => {
+        socket.to(data.pairId).emit("musicInvite", data);
+    });
+
+    /* JOIN */
+    socket.on("musicJoin", (data) => {
+        socket.to(data.pairId).emit("musicJoined");
+    });
+
+    /* SYNC */
+    socket.on("musicSync", (data) => {
+        socket.to(data.pairId).emit("musicSync", data);
     });
 });
 
