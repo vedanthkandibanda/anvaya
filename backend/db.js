@@ -1,18 +1,24 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config();
 
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+let db;
 
-const db = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-});
+export const connectDB = async () => {
+  try {
+    db = await mysql.createConnection({
+      host: process.env.MYSQLHOST,
+      user: process.env.MYSQLUSER,
+      password: process.env.MYSQLPASSWORD,
+      database: process.env.MYSQLDATABASE,
+      port: process.env.MYSQLPORT
+    });
 
-export default db;
+    console.log("✅ Connected to Railway DB");
+  } catch (err) {
+    console.error("❌ DB connection failed:", err);
+  }
+};
+
+export default () => db;
