@@ -30,7 +30,7 @@ export const logDBDiagnostics = async (label = "db") => {
         @@hostname AS mysql_hostname,
         @@port AS mysql_port,
         USER() AS session_user,
-        CURRENT_USER() AS current_user
+        CURRENT_USER() AS current_user_name
     `);
 
     const [tableRows] = await db.query(`
