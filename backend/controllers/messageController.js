@@ -1,5 +1,7 @@
-import db from "../db.js";
+import {getDB} from "../db.js";
 import { io } from "../server.js";
+
+const db = getDB();
 
 export const sendMessage = async (req, res) => {
     try {

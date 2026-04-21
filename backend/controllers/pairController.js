@@ -1,6 +1,8 @@
-import db from "../db.js";
+import {getDB} from "../db.js";
 import fs from "fs";
 import path from "path";
+
+const db = getDB();
 
 async function ensureConnectionBgTable() {
     await db.execute(`

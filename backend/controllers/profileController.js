@@ -1,5 +1,7 @@
-import db from "../config/dbConfig.js";
+import {getDB} from "../db.js";
 import { io } from "../server.js";
+
+const db = getDB();
 
 /* 🌅 DAILY MESSAGE */
 export const saveDailyMessage = async (req, res) => {

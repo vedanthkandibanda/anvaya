@@ -1,8 +1,11 @@
-import db from "../config/dbConfig.js";
+import {getDB} from "../db.js";
 
 /* UPLOAD */
 export const uploadSong = async (req, res) => {
     try {
+
+const db = getDB();
+
         const { pairId, name } = req.body || {};
 
         if (!pairId || !name) {

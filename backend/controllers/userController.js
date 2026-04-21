@@ -1,4 +1,6 @@
-import db from "../db.js";
+import {getDB} from "../db.js";
+
+const db = getDB();
 
 function toPublicUploadUrl(value) {
     if (!value) return null;
