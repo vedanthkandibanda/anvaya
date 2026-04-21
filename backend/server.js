@@ -5,7 +5,7 @@ import http from "http";
 import { Server } from "socket.io";
 import multer from "multer";
 
-import { connectDB , getDB} from "./db.js";
+import { connectDB, getDB, logDBDiagnostics } from "./db.js";
 
 await connectDB();
 const db = getDB();
@@ -142,11 +142,12 @@ setInterval(async () => {
         }
     } catch (err) {
         console.error("Scheduled message delivery failed:", err);
+        await logDBDiagnostics("scheduled-delivery-error");
     }
 }, 5000); // check every 5 sec
 
 setInterval(async () => {
-
+    try {
     const [messages] = await db.query(`
         SELECT * FROM messages 
         WHERE deliver_at IS NOT NULL 
@@ -169,7 +170,10 @@ setInterval(async () => {
             sender_id: msg.sender_id
         });
     }
-
+    } catch (err) {
+        console.error("Scheduled delivery status update failed:", err);
+        await logDBDiagnostics("scheduled-status-error");
+    }
 }, 5000); // every 5 seconds
 
 const PORT = process.env.PORT || 5000;
