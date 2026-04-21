@@ -15,10 +15,11 @@ export const connectDB = async () => {
       port: process.env.MYSQLPORT
     });
 
-    console.log("✅ Connected to Railway DB");
+    console.log("✅ Railway DB connected");
   } catch (err) {
-    console.error("❌ DB connection failed:", err);
+    console.error("❌ DB connection failed:", err.message);
+    process.exit(1);
   }
 };
 
-export default () => db;
+export const getDB = () => db;

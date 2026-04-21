@@ -5,12 +5,13 @@ import http from "http";
 import { Server } from "socket.io";
 import multer from "multer";
 
-import { connectDB } from "./db.js";
+import { connectDB , getDB} from "./db.js";
 
 await connectDB();
+const db = getDB();
 
 
-import db from "./config/dbConfig.js";
+
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import pairRoutes from "./routes/pairRoutes.js";
@@ -114,7 +115,7 @@ io.on("connection", (socket) => {
 
 setInterval(async () => {
     try {
-        const [messages] = await db.query(
+        const [messages] = await getDB().query(
             "SELECT * FROM messages WHERE is_delayed=1 AND deliver_at <= UTC_TIMESTAMP()"
         );
 
