@@ -1,0 +1,57 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/frontend/pages/auth/login.html"
+    },
+    {
+      "source": "/register",
+      "destination": "/frontend/pages/auth/register.html"
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "/frontend/pages/auth/forgot-password.html"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/frontend/pages/auth/reset-password.html"
+    },
+    {
+      "source": "/profile-setup",
+      "destination": "/frontend/pages/onboarding/profile-setup.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/frontend/pages/main/dashboard.html"
+    },
+    {
+      "source": "/chat",
+      "destination": "/frontend/pages/main/chat.html"
+    },
+    {
+      "source": "/music",
+      "destination": "/frontend/pages/main/music.html"
+    },
+    {
+      "source": "/vault",
+      "destination": "/frontend/pages/main/vault.html"
+    },
+    {
+      "source": "/settings",
+      "destination": "/frontend/pages/main/settings.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/frontend/pages/main/profile.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/frontend/pages/main/about.html"
+    }
+  ]
+}

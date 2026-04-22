@@ -1,0 +1,57 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/pages/auth/login.html"
+    },
+    {
+      "source": "/register",
+      "destination": "/pages/auth/register.html"
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "/pages/auth/forgot-password.html"
+    },
+    {
+      "source": "/reset-password",
+      "destination": "/pages/auth/reset-password.html"
+    },
+    {
+      "source": "/profile-setup",
+      "destination": "/pages/onboarding/profile-setup.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/pages/main/dashboard.html"
+    },
+    {
+      "source": "/chat",
+      "destination": "/pages/main/chat.html"
+    },
+    {
+      "source": "/music",
+      "destination": "/pages/main/music.html"
+    },
+    {
+      "source": "/vault",
+      "destination": "/pages/main/vault.html"
+    },
+    {
+      "source": "/settings",
+      "destination": "/pages/main/settings.html"
+    },
+    {
+      "source": "/profile",
+      "destination": "/pages/main/profile.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/pages/main/about.html"
+    }
+  ]
+}
