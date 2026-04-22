@@ -1,8 +1,6 @@
-import {getDB} from "../db.js";
+import { liveDB as db } from "../db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
-const db = getDB();
 
 export const registerUser = async (req, res) => {
     try {

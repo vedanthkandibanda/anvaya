@@ -1,4 +1,4 @@
-import db from "../config/dbConfig.js";
+import { liveDB as db } from "../db.js";
 
 /* ➕ ADD MEMORY */
 export const addMemory = async (req, res) => {

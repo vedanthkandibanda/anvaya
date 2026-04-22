@@ -1,7 +1,5 @@
-import {getDB} from "../db.js";
+import { liveDB as db } from "../db.js";
 import { buildPublicUploadUrl } from "../config/appConfig.js";
-
-const db = getDB();
 
 export const profileSetup = async (req, res) => {
     try {

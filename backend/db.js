@@ -66,4 +66,23 @@ export const connectDB = async () => {
   }
 };
 
+export const requireDB = () => {
+  if (!db) {
+    throw new Error("DB connection has not been initialized yet");
+  }
+
+  return db;
+};
+
+export const liveDB = new Proxy(
+  {},
+  {
+    get(_target, prop) {
+      const connection = requireDB();
+      const value = connection[prop];
+      return typeof value === "function" ? value.bind(connection) : value;
+    }
+  }
+);
+
 export const getDB = () => db;

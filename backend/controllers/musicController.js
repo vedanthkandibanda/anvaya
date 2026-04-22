@@ -1,10 +1,8 @@
-import {getDB} from "../db.js";
+import { liveDB as db } from "../db.js";
 
 /* UPLOAD */
 export const uploadSong = async (req, res) => {
     try {
-
-const db = getDB();
 
         const { pairId, name } = req.body || {};
 

@@ -1,9 +1,7 @@
-import {getDB} from "../db.js";
+import { liveDB as db } from "../db.js";
 import { buildPublicUploadUrl } from "../config/appConfig.js";
 import fs from "fs";
 import path from "path";
-
-const db = getDB();
 
 async function ensureConnectionBgTable() {
     await db.execute(`
