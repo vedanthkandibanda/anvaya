@@ -1,4 +1,4 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo } = window.APP_CONFIG;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            const response = await fetch("https://anvaya-production.up.railway.app/api/auth/register", {
+            const response = await fetch(buildApiUrl("/api/auth/register"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.classList.add("success-done");
 
             setTimeout(() => {
-                window.location.href = "/login";
+                navigateTo("login");
             }, 1200);
 
         } catch (error) {

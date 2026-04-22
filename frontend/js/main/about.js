@@ -1,3 +1,5 @@
+const { navigateTo } = window.APP_CONFIG;
+
 function goBack() {
-    window.location.href = "settings.html";
+    navigateTo("settings");
 }

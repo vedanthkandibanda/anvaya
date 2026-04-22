@@ -1,9 +1,9 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo } = window.APP_CONFIG;
 
 const userId = localStorage.getItem("userId");
 
 if (!userId) {
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 const profileForm = document.getElementById("profileForm");
@@ -58,7 +58,7 @@ profileForm.addEventListener("submit", async (e) => {
             formData.append("profilePic", profilePic);
         }
 
-        const res = await fetch("https://anvaya-production.up.railway.app/api/user/profile-setup", {
+        const res = await fetch(buildApiUrl("/api/user/profile-setup"), {
             method: "POST",
             body: formData
         });
@@ -66,7 +66,7 @@ profileForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (res.ok && data.status === "success") {
-            window.location.href = "/dashboard";
+            navigateTo("dashboard");
             return;
         }
 
@@ -79,11 +79,11 @@ profileForm.addEventListener("submit", async (e) => {
 
 function skipProfile() {
     if (!userId) {
-        window.location.href = "/login";
+        navigateTo("login");
         return;
     }
 
-    fetch("https://anvaya-production.up.railway.app/api/user/profile-setup", {
+    fetch(buildApiUrl("/api/user/profile-setup"), {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -100,7 +100,7 @@ function skipProfile() {
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
-                window.location.href = "/dashboard";
+                navigateTo("dashboard");
             } else {
                 showToast(data.message || "Unable to skip profile setup");
             }

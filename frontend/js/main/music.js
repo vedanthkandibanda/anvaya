@@ -1,17 +1,17 @@
-const { apiBaseUrl, buildApiUrl, buildUploadUrl } = window.APP_CONFIG;
+const { apiBaseUrl, buildApiUrl, buildUploadUrl, navigateTo } = window.APP_CONFIG;
 
-const socket = io("https://anvaya-production.up.railway.app");
+const socket = io(apiBaseUrl);
 
 const pairId = localStorage.getItem("pairId");
 const userId = localStorage.getItem("userId");
 
 if (!userId) {
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 if (!pairId) {
     alert("You are not connected yet.");
-    window.location.href = "dashboard.html";
+    navigateTo("dashboard");
 }
 
 const songList = document.getElementById("songList");
@@ -28,7 +28,7 @@ let currentSong = null;
 /* 🎧 SAMPLE SONGS */
 async function loadSongs() {
     try {
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/music/${pairId}`);
+        const res = await fetch(buildApiUrl(`/api/music/${pairId}`));
         if (!res.ok) {
             throw new Error("Unable to load songs");
         }
@@ -92,7 +92,7 @@ async function uploadSong() {
     formData.append("name", name);
     formData.append("pairId", pairId);
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/music/upload", {
+    const res = await fetch(buildApiUrl("/api/music/upload"), {
         method: "POST",
         body: formData
     });
@@ -121,7 +121,7 @@ function playSong(file) {
 
     currentSong = file;
 
-    const url = `https://anvaya-production.up.railway.app/uploads/${file}`;
+    const url = buildUploadUrl(file);
 
     player.src = url;
     player.currentTime = 0;
@@ -188,7 +188,7 @@ socket.on("musicSync", (data) => {
 
 /* NAV */
 function goBack() {
-    window.location.href = "dashboard.html";
+    navigateTo("dashboard");
 }
 
 player.addEventListener("play", () => {
@@ -255,7 +255,7 @@ function joinMusic() {
 
     const data = incomingSong;
 
-    const url = `https://anvaya-production.up.railway.app/uploads/${data.song}`;
+    const url = buildUploadUrl(data.song);
 
     player.src = url;
     player.currentTime = data.time;

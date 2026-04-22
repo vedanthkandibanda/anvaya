@@ -1,4 +1,4 @@
-const { apiBaseUrl, buildApiUrl, buildUploadUrl } = window.APP_CONFIG;
+const { apiBaseUrl, buildApiUrl, buildUploadUrl, navigateTo } = window.APP_CONFIG;
 
 /* ❤️ HEARTS */
 const heartsContainer = document.getElementById("chatHearts");
@@ -32,7 +32,7 @@ const vaultMemoryDesc = document.getElementById("vaultMemoryDesc");
 let selectedImageUrl = null;
 
 if (!userId) {
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 if (!pairId) {
@@ -111,7 +111,7 @@ document.addEventListener("click", (event) => {
 });
 
 backBtn.addEventListener("click", () => {
-    window.location.href = "dashboard.html";
+    navigateTo("dashboard");
 });
 
 function setPartnerInfo(partner) {
@@ -148,7 +148,7 @@ async function fetchPairStatus() {
     if (!userId) return;
 
     try {
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/user/profile/${userId}`);
+        const res = await fetch(buildApiUrl(`/api/user/profile/${userId}`));
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
@@ -156,7 +156,7 @@ async function fetchPairStatus() {
 
         if (!data.isConnected) {
             showToast("No active connection found. Please connect from dashboard.", "error");
-            window.location.href = "dashboard.html";
+            navigateTo("dashboard");
             return;
         }
 
@@ -247,7 +247,7 @@ fileInput.addEventListener("change", async () => {
         formData.append("pairId", pairId);
         formData.append("senderId", userId);
 
-        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/media", {
+        const response = await fetch(buildApiUrl("/api/messages/media"), {
             method: "POST",
             body: formData
         });
@@ -302,6 +302,48 @@ function scrollChatToBottom() {
     });
 }
 
+function escapeHtml(value = "") {
+    return String(value).replace(/[&<>"']/g, (character) => {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        };
+        return entities[character] || character;
+    });
+}
+
+function getMediaKind(fileName = "") {
+    const normalized = String(fileName).toLowerCase();
+    if (/\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(normalized)) return "image";
+    if (/\.(mp4|webm|mov|m4v|ogg)$/i.test(normalized)) return "video";
+    if (/\.(mp3|wav|m4a|aac|flac|oga)$/i.test(normalized)) return "audio";
+    return "file";
+}
+
+function renderMediaContent(fileName) {
+    const safeFileName = escapeHtml(fileName || "attachment");
+    const mediaUrl = buildUploadUrl(fileName);
+    const safeMediaUrl = escapeHtml(mediaUrl);
+    const mediaKind = getMediaKind(fileName);
+
+    if (mediaKind === "image") {
+        return `<img src="${safeMediaUrl}" class="chat-img" alt="Shared image">`;
+    }
+
+    if (mediaKind === "video") {
+        return `<video class="chat-video" controls preload="metadata" src="${safeMediaUrl}"></video>`;
+    }
+
+    if (mediaKind === "audio") {
+        return `<audio class="chat-audio" controls preload="metadata" src="${safeMediaUrl}"></audio>`;
+    }
+
+    return `<a class="chat-file" href="${safeMediaUrl}" target="_blank" rel="noopener noreferrer">Open attachment: ${safeFileName}</a>`;
+}
+
 function createMessageElement(msg) {
     const div = document.createElement("div");
     div.classList.add("message");
@@ -315,8 +357,8 @@ function createMessageElement(msg) {
     const isLocked = !isScheduled && lockedUntil && now < lockedUntil;
 
     const actualContent = msg.media_url
-        ? `<img src="https://anvaya-production.up.railway.app/uploads/${msg.media_url}" class="chat-img">`
-        : `<span>${msg.message || ""}</span>`;
+        ? renderMediaContent(msg.media_url)
+        : `<span>${escapeHtml(msg.message || "")}</span>`;
 
     const tickMarkup = isOwn
         ? isScheduled
@@ -329,7 +371,7 @@ function createMessageElement(msg) {
     if (isScheduled) {
         div.innerHTML = `
             <div class="msg-content" data-id="${msg.id}">
-                <span>${msg.message || ""} ⏳ Scheduled</span>
+                <span>${escapeHtml(msg.message || "")} ⏳ Scheduled</span>
                 ${statusTick}
             </div>
             ${reactionHtml}
@@ -381,7 +423,7 @@ function createMessageElement(msg) {
 async function loadMessages() {
     if (!pairId) return;
     try {
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/messages/${pairId}?userId=${encodeURIComponent(userId)}`);
+        const res = await fetch(buildApiUrl(`/api/messages/${pairId}?userId=${encodeURIComponent(userId)}`));
         if (!res.ok) {
             throw new Error(`Failed to load messages: ${res.status}`);
         }
@@ -408,7 +450,7 @@ async function sendMessage() {
     sendStatus.textContent = "Sending...";
 
     try {
-        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/send", {
+        const response = await fetch(buildApiUrl("/api/messages/send"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -475,14 +517,14 @@ async function acknowledgeReceived() {
     if (!pairId || !userId) return;
 
     try {
-        await fetch("https://anvaya-production.up.railway.app/api/messages/delivered", {
+        await fetch(buildApiUrl("/api/messages/delivered"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ pairId, userId })
         });
         socket.emit("messageDelivered", pairId);
 
-        await fetch("https://anvaya-production.up.railway.app/api/messages/seen", {
+        await fetch(buildApiUrl("/api/messages/seen"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ pairId, userId })
@@ -627,7 +669,7 @@ reactionBox.addEventListener("click", async (e) => {
     const currentReaction = msg?.parentElement?.querySelector(".reaction")?.innerText || null;
     const reaction = currentReaction === emoji ? null : emoji;
 
-    const response = await fetch("https://anvaya-production.up.railway.app/api/messages/react", {
+    const response = await fetch(buildApiUrl("/api/messages/react"), {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -707,7 +749,7 @@ saveToVaultBtn.onclick = async () => {
     formData.append("memory_date", date);
     formData.append("file_url", fileName);
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/vault", {
+    const res = await fetch(buildApiUrl("/api/vault"), {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -880,7 +922,7 @@ async function scheduleNewMessage() {
             message: text,
             deliverAt: utcDeliverAt
         };
-        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/send", {
+        const response = await fetch(buildApiUrl("/api/messages/send"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -943,7 +985,7 @@ async function editScheduledMessage() {
             message: text,
             deliverAt: utcDeliverAt
         };
-        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/schedule/edit", {
+        const response = await fetch(buildApiUrl("/api/messages/schedule/edit"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -982,7 +1024,7 @@ async function cancelScheduledMessage() {
     }
 
     try {
-        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/schedule/cancel", {
+        const response = await fetch(buildApiUrl("/api/messages/schedule/cancel"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

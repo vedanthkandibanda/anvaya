@@ -1,4 +1,4 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo } = window.APP_CONFIG;
 
 function goBack() {
     window.history.back();
@@ -21,11 +21,11 @@ async function resetPassword() {
     const email = localStorage.getItem("resetEmail");
     if (!email) {
         alert("Email not found. Try forgot password again.");
-        window.location.href = "forgot-password.html";
+        navigateTo("forgotPassword");
         return;
     }
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/auth/reset-password", {
+    const res = await fetch(buildApiUrl("/api/auth/reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -36,7 +36,7 @@ async function resetPassword() {
     if (res.ok && data.status === "success") {
         localStorage.removeItem("resetEmail");
         alert("Password updated");
-        window.location.href = "login.html";
+        navigateTo("login");
     } else {
         alert(data.message || "Error updating password");
     }

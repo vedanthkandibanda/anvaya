@@ -1,4 +1,4 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, buildUploadUrl, navigateTo } = window.APP_CONFIG;
 
 const connectionActions = document.getElementById("connectionActions");
 const connectionName = document.getElementById("connectionName");
@@ -40,7 +40,7 @@ const userId = rawUserId && rawUserId !== "null" && rawUserId !== "undefined" ? 
 /* CHECK AUTH */
 if (!userId) {
     console.log("No userId found, redirecting to login");
-    window.location.href = "/login";
+    navigateTo("login");
 } else {
     console.log("User ID found:", userId);
 }
@@ -51,7 +51,7 @@ async function loadDashboard() {
 
     try {
         const res = await fetch(
-            `https://anvaya-production.up.railway.app/api/user/profile/${userId}`
+            buildApiUrl(`/api/user/profile/${userId}`)
         );
 
         if (!res.ok) {
@@ -99,9 +99,9 @@ function renderDashboard(userData) {
         `;
 
         dashboardGrid.innerHTML = `
-            <div class="grid-item">📸 Vault</div>
-            <div class="grid-item">⚙️ Settings</div>
-            <div class="grid-item">👤 Profile</div>
+            <div class="grid-item" data-route="vault">📸 Vault</div>
+            <div class="grid-item" data-route="settings">⚙️ Settings</div>
+            <div class="grid-item" data-route="profile">👤 Profile</div>
         `;
 
         clearConnectionBackground();
@@ -128,14 +128,14 @@ function renderDashboard(userData) {
         `;
 
         dashboardGrid.innerHTML = `
-            <div class="grid-item">🎧 Listen</div>
+            <div class="grid-item" data-route="music">🎧 Listen</div>
             <div class="grid-item">🎬 Watch</div>
-            <div class="grid-item">📸 Vault</div>
-            <div class="grid-item">💬 Chat</div>
+            <div class="grid-item" data-route="vault">📸 Vault</div>
+            <div class="grid-item" data-route="chat">💬 Chat</div>
             <div class="grid-item">📞 Call</div>
             <div class="grid-item">🎥 Video</div>
-            <div class="grid-item">⚙️ Settings</div>
-            <div class="grid-item">👤 Profile</div>
+            <div class="grid-item" data-route="settings">⚙️ Settings</div>
+            <div class="grid-item" data-route="profile">👤 Profile</div>
         `;
 
         connectionMenuBtn.classList.remove("hidden");
@@ -163,7 +163,7 @@ async function loadConnectionBackground() {
     }
 
     try {
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/pair/connection-bg/${pairId}`);
+        const res = await fetch(buildApiUrl(`/api/pair/connection-bg/${pairId}`));
         if (!res.ok) {
             clearConnectionBackground();
             return;
@@ -241,7 +241,7 @@ saveBgBtn.addEventListener("click", async () => {
     formData.append("userId", userId);
     formData.append("image", image);
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/pair/connection-bg", {
+    const res = await fetch(buildApiUrl("/api/pair/connection-bg"), {
         method: "POST",
         body: formData
     });
@@ -261,7 +261,7 @@ resetBgBtn.addEventListener("click", async () => {
     const pairId = localStorage.getItem("pairId");
     if (!pairId) return;
 
-    const res = await fetch(`https://anvaya-production.up.railway.app/api/pair/connection-bg/${pairId}?userId=${userId}`, {
+    const res = await fetch(buildApiUrl(`/api/pair/connection-bg/${pairId}?userId=${encodeURIComponent(userId)}`), {
         method: "DELETE"
     });
 
@@ -331,7 +331,7 @@ document
 
     try {
         const res = await fetch(
-            `https://anvaya-production.up.railway.app/api/pair/search?query=${encodeURIComponent(query)}&userId=${userId}`
+            buildApiUrl(`/api/pair/search?query=${encodeURIComponent(query)}&userId=${encodeURIComponent(userId)}`)
         );
 
         if (!res.ok) {
@@ -372,7 +372,7 @@ async function sendRequest(receiverId) {
 
     try {
         const res = await fetch(
-            "https://anvaya-production.up.railway.app/api/pair/request",
+            buildApiUrl("/api/pair/request"),
             {
                 method: "POST",
                 headers: {
@@ -411,7 +411,7 @@ async function viewRequests() {
     const userId = localStorage.getItem("userId");
 
     const res = await fetch(
-        `https://anvaya-production.up.railway.app/api/pair/requests/${userId}`
+        buildApiUrl(`/api/pair/requests/${userId}`)
     );
 
     const requests = await res.json();
@@ -458,7 +458,7 @@ function closeRequestsModal() {
 async function acceptRequest(requestId, senderId, receiverId) {
     try {
         const res = await fetch(
-            "https://anvaya-production.up.railway.app/api/pair/accept-request",
+            buildApiUrl("/api/pair/accept-request"),
             {
                 method: "POST",
                 headers: {
@@ -481,7 +481,7 @@ async function acceptRequest(requestId, senderId, receiverId) {
         const newPairId = data.pairId || (data.pair && data.pair.id);
         if (newPairId) {
             localStorage.setItem("pairId", newPairId);
-            window.location.href = "chat.html";
+            navigateTo("chat");
             return;
         }
 
@@ -498,7 +498,7 @@ async function acceptRequest(requestId, senderId, receiverId) {
 async function rejectRequest(requestId) {
 
     const res = await fetch(
-        "https://anvaya-production.up.railway.app/api/pair/reject-request",
+        buildApiUrl("/api/pair/reject-request"),
         {
             method: "POST",
             headers: {
@@ -517,7 +517,7 @@ async function rejectRequest(requestId) {
 }
 
 function goToChat() {
-    window.location.href = "chat.html";
+    navigateTo("chat");
 }
 
 /* INITIAL */
@@ -530,17 +530,15 @@ dashboardGrid.addEventListener("click", function(event) {
     const item = event.target.closest(".grid-item");
     if (!item) return;
 
+    const targetRoute = item.dataset.route;
+    if (targetRoute) {
+        navigateTo(targetRoute);
+        return;
+    }
+
     const text = item.textContent;
     if (text.includes("Listen")) {
-        window.location.href = "music.html";
-    } else if (text.includes("Vault")) {
-        window.location.href = "vault.html";
-    } else if (text.includes("Settings")) {
-        window.location.href = "settings.html";
-    } else if (text.includes("Profile")) {
-        window.location.href = "profile.html";
-    } else if (text.includes("Chat")) {
-        window.location.href = "chat.html";
+        navigateTo("music");
     } else {
         showToast(text + " feature coming soon!", "info");
     }
@@ -554,7 +552,7 @@ async function loadDailyMessage() {
 
     try {
 
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/profile/daily/${pairId}`);
+        const res = await fetch(buildApiUrl(`/api/profile/daily/${pairId}`));
         const data = await res.json();
 
         const popup = document.getElementById("dailyPopup");
@@ -581,7 +579,7 @@ async function loadDailyMessage() {
             `;
 
             popup.onclick = () => {
-                window.location.href = "profile.html";
+                navigateTo("profile");
             };
         }
 

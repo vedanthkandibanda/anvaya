@@ -1,5 +1,7 @@
+const { navigateTo } = window.APP_CONFIG;
+
 function goBack() {
-	window.location.href = "login.html";
+	navigateTo("login");
 }
 
 async function sendEmail() {
@@ -11,5 +13,5 @@ async function sendEmail() {
 	}
 
 	localStorage.setItem("resetEmail", email);
-	window.location.href = "reset-password.html";
+	navigateTo("resetPassword");
 }

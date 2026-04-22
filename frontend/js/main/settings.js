@@ -1,13 +1,13 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo } = window.APP_CONFIG;
 
 // 🔐 AUTH GUARD
 const token = localStorage.getItem("token");
 if (!token) {
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 function goBack() {
-    window.location.href = "dashboard.html";
+    navigateTo("dashboard");
 }
 
 /* ❤️ BG HEARTS */
@@ -24,7 +24,7 @@ for (let i = 0; i < 20; i++) {
 function logout() {
     if (!confirm("Are you sure you want to logout?")) return;
     localStorage.clear();
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 /* 💔 DISCONNECT */
@@ -40,7 +40,7 @@ async function disconnect() {
     if (!confirm("This will permanently delete all your messages and memories with your partner. Are you sure?")) return;
 
     try {
-        const res = await fetch("https://anvaya-production.up.railway.app/api/pairs/disconnect", {
+        const res = await fetch(buildApiUrl("/api/pair/disconnect"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -59,7 +59,7 @@ async function disconnect() {
         /* Clear all local data and redirect to dashboard (will show pairing screen) */
         localStorage.removeItem("pairId");
         localStorage.removeItem("partnerId");
-        window.location.href = "dashboard.html";
+        navigateTo("dashboard");
 
     } catch (err) {
         console.error("Disconnect error:", err);
@@ -69,10 +69,10 @@ async function disconnect() {
 
 /* ℹ️ ABOUT */
 function openAbout() {
-    window.location.href = "about.html";
+    navigateTo("about");
 }
 
 function openChangePassword() {
-    window.location.href = "../auth/reset-password.html";
+    navigateTo("resetPassword");
 }
 

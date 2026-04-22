@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
 import multer from "multer";
+import path from "path";
 
 import { connectDB, getDB, logDBDiagnostics } from "./db.js";
 
@@ -23,6 +24,8 @@ import musicRoutes from "./routes/musicRoutes.js";
 dotenv.config();
 
 const app = express();
+const uploadsDir = path.resolve(process.cwd(), "uploads");
+const backendUploadsDir = path.resolve(process.cwd(), "backend/uploads");
 
 app.use(cors());
 app.use(express.json());
@@ -31,8 +34,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/pair", pairRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/uploads", express.static("uploads"));
-app.use("/uploads", express.static("backend/uploads"));
+app.use("/uploads", express.static(uploadsDir));
+app.use("/uploads", express.static(backendUploadsDir));
 app.use("/api/profile", profileRoutes);
 app.use("/api/vault", vaultRoutes);
 app.use("/api/music", musicRoutes);
@@ -48,6 +51,23 @@ const storage = multer.diskStorage({
 });
 
 export const upload = multer({ storage });
+
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+            return res.status(400).json({ status: "error", message: "File is too large. Maximum size is 20 MB." });
+        }
+
+        return res.status(400).json({ status: "error", message: "Unsupported file type." });
+    }
+
+    if (err) {
+        console.error("UNHANDLED REQUEST ERROR:", err);
+        return res.status(500).json({ status: "error", message: "Server error" });
+    }
+
+    next();
+});
 
 const server = http.createServer(app);
 

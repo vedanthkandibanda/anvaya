@@ -1,10 +1,10 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo } = window.APP_CONFIG;
 
 // 🔐 AUTH GUARD (ADD AT TOP)
 const token = localStorage.getItem("token");
 
 if (!token) {
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 const profileDp = document.getElementById("profileDp");
@@ -56,7 +56,7 @@ function closeModal(modal) {
 }
 
 function goBack() {
-    window.location.href = "dashboard.html";
+    navigateTo("dashboard");
 }
 
 function showToast(message, type = "info") {
@@ -96,7 +96,7 @@ async function loadProfileData() {
     if (!userId) return;
 
     try {
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/user/profile/${userId}`);
+        const res = await fetch(buildApiUrl(`/api/user/profile/${userId}`));
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
@@ -137,7 +137,7 @@ async function loadTodayDailyMessage() {
     if (!pairId) return;
 
     try {
-        const res = await fetch(`https://anvaya-production.up.railway.app/api/profile/daily/${pairId}`);
+        const res = await fetch(buildApiUrl(`/api/profile/daily/${pairId}`));
         if (!res.ok) return;
 
         const data = await res.json();
@@ -189,7 +189,7 @@ document.getElementById("saveDaily").onclick = async () => {
         return;
     }
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/profile/daily", {
+    const res = await fetch(buildApiUrl("/api/profile/daily"), {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ pairId, message: text })
@@ -212,7 +212,7 @@ saveBtn.onclick = async () => {
     const title = document.getElementById("memoryTitle").value;
     const desc = document.getElementById("memoryDesc").value;
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/profile/memory", {
+    const res = await fetch(buildApiUrl("/api/profile/memory"), {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -238,7 +238,7 @@ async function loadMemories() {
 
     list.innerHTML = "";
 
-    const res = await fetch(`https://anvaya-production.up.railway.app/api/profile/memory/${pairId}`);
+    const res = await fetch(buildApiUrl(`/api/profile/memory/${pairId}`));
     const data = await res.json();
 
     data.forEach(m => {
@@ -273,7 +273,7 @@ saveProfileBtn.addEventListener("click", async () => {
         formData.append("profilePic", editDpInput.files[0]);
     }
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/user/profile-update", {
+    const res = await fetch(buildApiUrl("/api/user/profile-update"), {
         method: "POST",
         body: formData
     });
@@ -306,7 +306,7 @@ document.getElementById("smartSend").onclick = async () => {
         return;
     }
 
-    const res = await fetch("https://anvaya-production.up.railway.app/api/profile/smart", {
+    const res = await fetch(buildApiUrl("/api/profile/smart"), {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -343,7 +343,7 @@ document.addEventListener("click", (e) => {
 
 function goToSettings() {
     menuPopup.classList.add("hidden");
-    window.location.href = "settings.html";
+    navigateTo("settings");
 }
 
 async function disconnectFromMenu() {
@@ -360,7 +360,7 @@ async function disconnectFromMenu() {
     if (!confirm("This will permanently delete all your messages and memories with your partner. Are you sure?")) return;
 
     try {
-        const res = await fetch("https://anvaya-production.up.railway.app/api/pairs/disconnect", {
+        const res = await fetch(buildApiUrl("/api/pair/disconnect"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -378,7 +378,7 @@ async function disconnectFromMenu() {
 
         localStorage.removeItem("pairId");
         localStorage.removeItem("partnerId");
-        window.location.href = "dashboard.html";
+        navigateTo("dashboard");
 
     } catch (err) {
         console.error("Disconnect error:", err);
@@ -390,7 +390,7 @@ function logoutFromMenu() {
     menuPopup.classList.add("hidden");
     if (!confirm("Are you sure you want to logout?")) return;
     localStorage.clear();
-    window.location.href = "/login";
+    navigateTo("login");
 }
 
 

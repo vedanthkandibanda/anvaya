@@ -2,6 +2,21 @@
     const legacyBaseUrl = "https://anvaya-production.up.railway.app";
     const configuredApiBaseUrl = window.__ANVAYA_API_BASE_URL__ || legacyBaseUrl;
     const apiBaseUrl = configuredApiBaseUrl.replace(/\/+$/, "");
+    const appRoutes = Object.freeze({
+        home: "/",
+        login: "/login",
+        register: "/register",
+        forgotPassword: "/forgot-password",
+        resetPassword: "/reset-password",
+        profileSetup: "/profile-setup",
+        dashboard: "/dashboard",
+        chat: "/chat",
+        music: "/music",
+        vault: "/vault",
+        settings: "/settings",
+        profile: "/profile",
+        about: "/about"
+    });
 
     const replaceLegacyBase = (value) => {
         if (typeof value !== "string") {
@@ -22,12 +37,32 @@
         return `${apiBaseUrl}/uploads/${String(fileName).replace(/^\/+/, "")}`;
     };
 
+    const buildPageUrl = (routeNameOrPath = "") => {
+        if (!routeNameOrPath) {
+            return appRoutes.home;
+        }
+
+        const route = appRoutes[routeNameOrPath] || routeNameOrPath;
+        if (/^https?:\/\//i.test(route)) {
+            return route;
+        }
+
+        return route.startsWith("/") ? route : `/${route.replace(/^\/+/, "")}`;
+    };
+
+    const navigateTo = (routeNameOrPath) => {
+        window.location.href = buildPageUrl(routeNameOrPath);
+    };
+
     window.APP_CONFIG = {
         apiBaseUrl,
         socketUrl: apiBaseUrl,
         legacyBaseUrl,
+        routes: appRoutes,
         buildApiUrl,
         buildUploadUrl,
+        buildPageUrl,
+        navigateTo,
         replaceLegacyBase
     };
 

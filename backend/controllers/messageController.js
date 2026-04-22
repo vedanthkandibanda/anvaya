@@ -122,7 +122,15 @@ export const markSeen = async (req, res) => {
 export const sendMedia = async (req, res) => {
     try {
         const { pairId, senderId } = req.body;
-        const filePath = req.file.filename;
+        const filePath = req.file?.filename;
+
+        if (!pairId || !senderId) {
+            return res.status(400).json({ status: "error", message: "pairId and senderId are required" });
+        }
+
+        if (!filePath) {
+            return res.status(400).json({ status: "error", message: "A media file is required" });
+        }
 
         await db.query(
             "INSERT INTO messages (pair_id, sender_id, media_url, status) VALUES (?, ?, ?, 'sent')",
@@ -135,10 +143,11 @@ export const sendMedia = async (req, res) => {
             media: filePath
         });
 
-        res.json({ status: "success" });
+        res.json({ status: "success", mediaUrl: filePath });
 
     } catch (err) {
-        res.status(500).json({ status: "error" });
+        console.error("SEND MEDIA ERROR:", err);
+        res.status(500).json({ status: "error", message: "Unable to upload media" });
     }
 };
 

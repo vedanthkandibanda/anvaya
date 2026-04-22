@@ -1,4 +1,4 @@
-const { buildApiUrl } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo } = window.APP_CONFIG;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.classList.add("loading");
 
         try {
-            const response = await fetch("https://anvaya-production.up.railway.app/api/auth/login", {
+            const response = await fetch(buildApiUrl("/api/auth/login"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -90,9 +90,9 @@ document.addEventListener("DOMContentLoaded", () => {
             // REDIRECT BASED ON FIRST LOGIN
             setTimeout(() => {
                 if (data.firstLogin) {
-                    window.location.href = "../onboarding/profile-setup.html";
+                    navigateTo("profileSetup");
                 } else {
-                    window.location.href = "../main/dashboard.html";
+                    navigateTo("dashboard");
                 }
             }, 400);
 
