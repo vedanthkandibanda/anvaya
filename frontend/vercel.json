@@ -1,69 +1,70 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "routes": [
+  "rewrites": [
     {
-      "src": "^/$",
-      "dest": "/index.html"
+      "source": "/",
+      "destination": "/index"
     },
     {
-      "src": "^/login$",
-      "dest": "/pages/auth/login.html"
+      "source": "/login",
+      "destination": "/pages/auth/login"
     },
     {
-      "src": "^/register$",
-      "dest": "/pages/auth/register.html"
+      "source": "/register",
+      "destination": "/pages/auth/register"
     },
     {
-      "src": "^/forgot-password$",
-      "dest": "/pages/auth/forgot-password.html"
+      "source": "/forgot-password",
+      "destination": "/pages/auth/forgot-password"
     },
     {
-      "src": "^/reset-password$",
-      "dest": "/pages/auth/reset-password.html"
+      "source": "/reset-password",
+      "destination": "/pages/auth/reset-password"
     },
     {
-      "src": "^/profile-setup$",
-      "dest": "/pages/onboarding/profile-setup.html"
+      "source": "/profile-setup",
+      "destination": "/pages/onboarding/profile-setup"
     },
     {
-      "src": "^/dashboard$",
-      "dest": "/pages/main/dashboard.html"
+      "source": "/dashboard",
+      "destination": "/pages/main/dashboard"
     },
     {
-      "src": "^/chat$",
-      "dest": "/pages/main/chat.html"
+      "source": "/chat",
+      "destination": "/pages/main/chat"
     },
     {
-      "src": "^/music$",
-      "dest": "/pages/main/music.html"
+      "source": "/music",
+      "destination": "/pages/main/music"
     },
     {
-      "src": "^/vault$",
-      "dest": "/pages/main/vault.html"
+      "source": "/vault",
+      "destination": "/pages/main/vault"
     },
     {
-      "src": "^/settings$",
-      "dest": "/pages/main/settings.html"
+      "source": "/settings",
+      "destination": "/pages/main/settings"
     },
     {
-      "src": "^/profile$",
-      "dest": "/pages/main/profile.html"
+      "source": "/profile",
+      "destination": "/pages/main/profile"
     },
     {
-      "src": "^/about$",
-      "dest": "/pages/main/about.html"
+      "source": "/about",
+      "destination": "/pages/main/about"
     },
     {
-      "src": "^/css/(.*)$",
-      "dest": "/css/$1"
+      "source": "/css/(.*)",
+      "destination": "/css/$1"
     },
     {
-      "src": "^/js/(.*)$",
-      "dest": "/js/$1"
+      "source": "/js/(.*)",
+      "destination": "/js/$1"
     },
     {
-      "src": "^/assets/(.*)$",
-      "dest": "/assets/$1"
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
     }
   ]
 }

@@ -1,69 +1,70 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "routes": [
+  "rewrites": [
     {
-      "src": "^/$",
-      "dest": "/frontend/index.html"
+      "source": "/",
+      "destination": "/frontend/index"
     },
     {
-      "src": "^/login$",
-      "dest": "/frontend/pages/auth/login.html"
+      "source": "/login",
+      "destination": "/frontend/pages/auth/login"
     },
     {
-      "src": "^/register$",
-      "dest": "/frontend/pages/auth/register.html"
+      "source": "/register",
+      "destination": "/frontend/pages/auth/register"
     },
     {
-      "src": "^/forgot-password$",
-      "dest": "/frontend/pages/auth/forgot-password.html"
+      "source": "/forgot-password",
+      "destination": "/frontend/pages/auth/forgot-password"
     },
     {
-      "src": "^/reset-password$",
-      "dest": "/frontend/pages/auth/reset-password.html"
+      "source": "/reset-password",
+      "destination": "/frontend/pages/auth/reset-password"
     },
     {
-      "src": "^/profile-setup$",
-      "dest": "/frontend/pages/onboarding/profile-setup.html"
+      "source": "/profile-setup",
+      "destination": "/frontend/pages/onboarding/profile-setup"
     },
     {
-      "src": "^/dashboard$",
-      "dest": "/frontend/pages/main/dashboard.html"
+      "source": "/dashboard",
+      "destination": "/frontend/pages/main/dashboard"
     },
     {
-      "src": "^/chat$",
-      "dest": "/frontend/pages/main/chat.html"
+      "source": "/chat",
+      "destination": "/frontend/pages/main/chat"
     },
     {
-      "src": "^/music$",
-      "dest": "/frontend/pages/main/music.html"
+      "source": "/music",
+      "destination": "/frontend/pages/main/music"
     },
     {
-      "src": "^/vault$",
-      "dest": "/frontend/pages/main/vault.html"
+      "source": "/vault",
+      "destination": "/frontend/pages/main/vault"
     },
     {
-      "src": "^/settings$",
-      "dest": "/frontend/pages/main/settings.html"
+      "source": "/settings",
+      "destination": "/frontend/pages/main/settings"
     },
     {
-      "src": "^/profile$",
-      "dest": "/frontend/pages/main/profile.html"
+      "source": "/profile",
+      "destination": "/frontend/pages/main/profile"
     },
     {
-      "src": "^/about$",
-      "dest": "/frontend/pages/main/about.html"
+      "source": "/about",
+      "destination": "/frontend/pages/main/about"
     },
     {
-      "src": "^/css/(.*)$",
-      "dest": "/frontend/css/$1"
+      "source": "/css/(.*)",
+      "destination": "/frontend/css/$1"
     },
     {
-      "src": "^/js/(.*)$",
-      "dest": "/frontend/js/$1"
+      "source": "/js/(.*)",
+      "destination": "/frontend/js/$1"
     },
     {
-      "src": "^/assets/(.*)$",
-      "dest": "/frontend/assets/$1"
+      "source": "/assets/(.*)",
+      "destination": "/frontend/assets/$1"
     }
   ]
 }
