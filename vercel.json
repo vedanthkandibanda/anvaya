@@ -1,69 +1,69 @@
 {
   "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/css/(.*)",
-      "destination": "/frontend/css/$1"
+      "src": "^/$",
+      "dest": "/frontend/index.html"
     },
     {
-      "source": "/js/(.*)",
-      "destination": "/frontend/js/$1"
+      "src": "^/login$",
+      "dest": "/frontend/pages/auth/login.html"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/frontend/assets/$1"
+      "src": "^/register$",
+      "dest": "/frontend/pages/auth/register.html"
     },
     {
-      "source": "/",
-      "destination": "/frontend/index.html"
+      "src": "^/forgot-password$",
+      "dest": "/frontend/pages/auth/forgot-password.html"
     },
     {
-      "source": "/login",
-      "destination": "/frontend/pages/auth/login.html"
+      "src": "^/reset-password$",
+      "dest": "/frontend/pages/auth/reset-password.html"
     },
     {
-      "source": "/register",
-      "destination": "/frontend/pages/auth/register.html"
+      "src": "^/profile-setup$",
+      "dest": "/frontend/pages/onboarding/profile-setup.html"
     },
     {
-      "source": "/forgot-password",
-      "destination": "/frontend/pages/auth/forgot-password.html"
+      "src": "^/dashboard$",
+      "dest": "/frontend/pages/main/dashboard.html"
     },
     {
-      "source": "/reset-password",
-      "destination": "/frontend/pages/auth/reset-password.html"
+      "src": "^/chat$",
+      "dest": "/frontend/pages/main/chat.html"
     },
     {
-      "source": "/profile-setup",
-      "destination": "/frontend/pages/onboarding/profile-setup.html"
+      "src": "^/music$",
+      "dest": "/frontend/pages/main/music.html"
     },
     {
-      "source": "/dashboard",
-      "destination": "/frontend/pages/main/dashboard.html"
+      "src": "^/vault$",
+      "dest": "/frontend/pages/main/vault.html"
     },
     {
-      "source": "/chat",
-      "destination": "/frontend/pages/main/chat.html"
+      "src": "^/settings$",
+      "dest": "/frontend/pages/main/settings.html"
     },
     {
-      "source": "/music",
-      "destination": "/frontend/pages/main/music.html"
+      "src": "^/profile$",
+      "dest": "/frontend/pages/main/profile.html"
     },
     {
-      "source": "/vault",
-      "destination": "/frontend/pages/main/vault.html"
+      "src": "^/about$",
+      "dest": "/frontend/pages/main/about.html"
     },
     {
-      "source": "/settings",
-      "destination": "/frontend/pages/main/settings.html"
+      "src": "^/css/(.*)$",
+      "dest": "/frontend/css/$1"
     },
     {
-      "source": "/profile",
-      "destination": "/frontend/pages/main/profile.html"
+      "src": "^/js/(.*)$",
+      "dest": "/frontend/js/$1"
     },
     {
-      "source": "/about",
-      "destination": "/frontend/pages/main/about.html"
+      "src": "^/assets/(.*)$",
+      "dest": "/frontend/assets/$1"
     }
   ]
 }

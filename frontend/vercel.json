@@ -1,69 +1,69 @@
 {
   "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/css/(.*)",
-      "destination": "/css/$1"
+      "src": "^/$",
+      "dest": "/index.html"
     },
     {
-      "source": "/js/(.*)",
-      "destination": "/js/$1"
+      "src": "^/login$",
+      "dest": "/pages/auth/login.html"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
+      "src": "^/register$",
+      "dest": "/pages/auth/register.html"
     },
     {
-      "source": "/",
-      "destination": "/index.html"
+      "src": "^/forgot-password$",
+      "dest": "/pages/auth/forgot-password.html"
     },
     {
-      "source": "/login",
-      "destination": "/pages/auth/login.html"
+      "src": "^/reset-password$",
+      "dest": "/pages/auth/reset-password.html"
     },
     {
-      "source": "/register",
-      "destination": "/pages/auth/register.html"
+      "src": "^/profile-setup$",
+      "dest": "/pages/onboarding/profile-setup.html"
     },
     {
-      "source": "/forgot-password",
-      "destination": "/pages/auth/forgot-password.html"
+      "src": "^/dashboard$",
+      "dest": "/pages/main/dashboard.html"
     },
     {
-      "source": "/reset-password",
-      "destination": "/pages/auth/reset-password.html"
+      "src": "^/chat$",
+      "dest": "/pages/main/chat.html"
     },
     {
-      "source": "/profile-setup",
-      "destination": "/pages/onboarding/profile-setup.html"
+      "src": "^/music$",
+      "dest": "/pages/main/music.html"
     },
     {
-      "source": "/dashboard",
-      "destination": "/pages/main/dashboard.html"
+      "src": "^/vault$",
+      "dest": "/pages/main/vault.html"
     },
     {
-      "source": "/chat",
-      "destination": "/pages/main/chat.html"
+      "src": "^/settings$",
+      "dest": "/pages/main/settings.html"
     },
     {
-      "source": "/music",
-      "destination": "/pages/main/music.html"
+      "src": "^/profile$",
+      "dest": "/pages/main/profile.html"
     },
     {
-      "source": "/vault",
-      "destination": "/pages/main/vault.html"
+      "src": "^/about$",
+      "dest": "/pages/main/about.html"
     },
     {
-      "source": "/settings",
-      "destination": "/pages/main/settings.html"
+      "src": "^/css/(.*)$",
+      "dest": "/css/$1"
     },
     {
-      "source": "/profile",
-      "destination": "/pages/main/profile.html"
+      "src": "^/js/(.*)$",
+      "dest": "/js/$1"
     },
     {
-      "source": "/about",
-      "destination": "/pages/main/about.html"
+      "src": "^/assets/(.*)$",
+      "dest": "/assets/$1"
     }
   ]
 }
