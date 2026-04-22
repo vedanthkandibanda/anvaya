@@ -1,4 +1,4 @@
-const { buildApiUrl, navigateTo } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo, fetchWithTimeout } = window.APP_CONFIG;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.classList.add("loading");
 
         try {
-            const response = await fetch(buildApiUrl("/api/auth/login"), {
+            const response = await fetchWithTimeout(buildApiUrl("/api/auth/login"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     loginId: loginId.value.trim(),
                     password: password.value
                 })
-            });
+            }, 12000);
 
             const data = await response.json();
 
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }, 400);
 
         } catch (error) {
-            showError("Server not reachable");
+            showError("Server not reachable. Please check your internet or try again.");
         }
     });
 

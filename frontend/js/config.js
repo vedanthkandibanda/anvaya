@@ -54,6 +54,19 @@
         window.location.href = buildPageUrl(routeNameOrPath);
     };
 
+    const fetchWithTimeout = (input, init = {}, timeoutMs = 12000) => {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+        const nextInit = {
+            ...init,
+            signal: init.signal || controller.signal
+        };
+
+        return window.fetch(input, nextInit).finally(() => {
+            window.clearTimeout(timeoutId);
+        });
+    };
+
     window.APP_CONFIG = {
         apiBaseUrl,
         socketUrl: apiBaseUrl,
@@ -63,6 +76,7 @@
         buildUploadUrl,
         buildPageUrl,
         navigateTo,
+        fetchWithTimeout,
         replaceLegacyBase
     };
 
@@ -127,25 +141,7 @@
         });
     };
 
-    const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type === "attributes" && mutation.target instanceof Element) {
-                rewriteElementUrls(mutation.target);
-            }
-
-            mutation.addedNodes.forEach((node) => {
-                rewriteElementUrls(node);
-            });
-        });
-    });
-
     document.addEventListener("DOMContentLoaded", () => {
         rewriteElementUrls(document.body);
-        observer.observe(document.documentElement, {
-            childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: ["src", "href", "action", "poster"]
-        });
     });
 })();

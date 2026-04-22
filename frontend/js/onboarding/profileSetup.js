@@ -1,4 +1,4 @@
-const { buildApiUrl, navigateTo } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo, fetchWithTimeout } = window.APP_CONFIG;
 
 const userId = localStorage.getItem("userId");
 
@@ -58,10 +58,10 @@ profileForm.addEventListener("submit", async (e) => {
             formData.append("profilePic", profilePic);
         }
 
-        const res = await fetch(buildApiUrl("/api/user/profile-setup"), {
+        const res = await fetchWithTimeout(buildApiUrl("/api/user/profile-setup"), {
             method: "POST",
             body: formData
-        });
+        }, 15000);
 
         const data = await res.json();
 
@@ -84,7 +84,7 @@ function skipProfile() {
         return;
     }
 
-    fetch(buildApiUrl("/api/user/profile-setup"), {
+    fetchWithTimeout(buildApiUrl("/api/user/profile-setup"), {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -97,7 +97,7 @@ function skipProfile() {
             love_language: "",
             mood_type: ""
         })
-    })
+    }, 12000)
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {

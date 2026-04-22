@@ -1,4 +1,4 @@
-const { buildApiUrl, navigateTo } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo, fetchWithTimeout } = window.APP_CONFIG;
 
 function goBack() {
     window.history.back();
@@ -25,11 +25,11 @@ async function resetPassword() {
         return;
     }
 
-    const res = await fetch(buildApiUrl("/api/auth/reset-password"), {
+    const res = await fetchWithTimeout(buildApiUrl("/api/auth/reset-password"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
-    });
+    }, 12000);
 
     const data = await res.json();
 

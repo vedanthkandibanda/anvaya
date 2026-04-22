@@ -1,4 +1,4 @@
-const { buildApiUrl, buildUploadUrl, navigateTo } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo, fetchWithTimeout } = window.APP_CONFIG;
 
 const connectionActions = document.getElementById("connectionActions");
 const connectionName = document.getElementById("connectionName");
@@ -19,6 +19,21 @@ const changeBgBtn = document.getElementById("changeBgBtn");
 const resetBgBtn = document.getElementById("resetBgBtn");
 
 let hasConnectionBackground = false;
+
+function renderDisconnectedDashboard() {
+    connectionName.innerText = "Not Connected";
+    connectionActions.innerHTML = `
+        <button onclick="searchUser()">Search</button>
+        <button onclick="viewRequests()">Requests</button>
+    `;
+    dashboardGrid.innerHTML = `
+        <div class="grid-item" data-route="vault">Vault</div>
+        <div class="grid-item" data-route="settings">Settings</div>
+        <div class="grid-item" data-route="profile">Profile</div>
+    `;
+    clearConnectionBackground();
+    connectionMenuBtn.classList.add("hidden");
+}
 
 function showToast(message, type = "info") {
     if (!toastContainer) return;
@@ -44,6 +59,7 @@ if (!userId || !token) {
     navigateTo("login");
 } else {
     console.log("User ID found:", userId);
+    renderDisconnectedDashboard();
 }
 
 /* LOAD DASHBOARD */
@@ -51,8 +67,10 @@ async function loadDashboard() {
     console.log("Loading dashboard for user:", userId);
 
     try {
-        const res = await fetch(
-            buildApiUrl(`/api/user/profile/${userId}`)
+        const res = await fetchWithTimeout(
+            buildApiUrl(`/api/user/profile/${userId}`),
+            {},
+            10000
         );
 
         if (!res.ok) {
@@ -87,7 +105,8 @@ async function loadDashboard() {
 
     } catch (err) {
         console.error("Dashboard load failed:", err);
-        showToast("Dashboard load failed: " + err.message, "error");
+        renderDisconnectedDashboard();
+        showToast("Dashboard is offline right now. You can still open profile, settings, or try again.", "error");
     }
 }
 
@@ -103,21 +122,7 @@ function renderDashboard(userData) {
     if (!userData.isConnected) {
         console.log("User not connected, showing search options");
 
-        connectionName.innerText = "Not Connected";
-
-        connectionActions.innerHTML = `
-            <button onclick="searchUser()">🔍 Search</button>
-            <button onclick="viewRequests()">📩 Requests</button>
-        `;
-
-        dashboardGrid.innerHTML = `
-            <div class="grid-item" data-route="vault">📸 Vault</div>
-            <div class="grid-item" data-route="settings">⚙️ Settings</div>
-            <div class="grid-item" data-route="profile">👤 Profile</div>
-        `;
-
-        clearConnectionBackground();
-        connectionMenuBtn.classList.add("hidden");
+        renderDisconnectedDashboard();
 
     } else {
         console.log("User connected, showing full features");
@@ -175,7 +180,7 @@ async function loadConnectionBackground() {
     }
 
     try {
-        const res = await fetch(buildApiUrl(`/api/pair/connection-bg/${pairId}`));
+        const res = await fetchWithTimeout(buildApiUrl(`/api/pair/connection-bg/${pairId}`), {}, 8000);
         if (!res.ok) {
             clearConnectionBackground();
             return;
@@ -253,10 +258,10 @@ saveBgBtn.addEventListener("click", async () => {
     formData.append("userId", userId);
     formData.append("image", image);
 
-    const res = await fetch(buildApiUrl("/api/pair/connection-bg"), {
+    const res = await fetchWithTimeout(buildApiUrl("/api/pair/connection-bg"), {
         method: "POST",
         body: formData
-    });
+    }, 12000);
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -273,9 +278,9 @@ resetBgBtn.addEventListener("click", async () => {
     const pairId = localStorage.getItem("pairId");
     if (!pairId) return;
 
-    const res = await fetch(buildApiUrl(`/api/pair/connection-bg/${pairId}?userId=${encodeURIComponent(userId)}`), {
+    const res = await fetchWithTimeout(buildApiUrl(`/api/pair/connection-bg/${pairId}?userId=${encodeURIComponent(userId)}`), {
         method: "DELETE"
-    });
+    }, 10000);
 
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -373,7 +378,7 @@ document
     }
 
     try {
-        const res = await fetch(
+        const res = await fetchWithTimeout(
             buildApiUrl(`/api/pair/search?query=${encodeURIComponent(query)}&userId=${encodeURIComponent(userId)}`)
         );
 
@@ -414,7 +419,7 @@ async function sendRequest(receiverId) {
     const senderId = localStorage.getItem("userId");
 
     try {
-        const res = await fetch(
+        const res = await fetchWithTimeout(
             buildApiUrl("/api/pair/request"),
             {
                 method: "POST",
@@ -425,7 +430,8 @@ async function sendRequest(receiverId) {
                     senderId,
                     receiverId
                 })
-            }
+            },
+            10000
         );
 
         const data = await res.json();
@@ -453,7 +459,7 @@ async function viewRequests() {
 
     const userId = localStorage.getItem("userId");
 
-    const res = await fetch(
+    const res = await fetchWithTimeout(
         buildApiUrl(`/api/pair/requests/${userId}`)
     );
 
@@ -504,7 +510,7 @@ function closeRequestsModal() {
 /* ACCEPT */
 async function acceptRequest(requestId, senderId, receiverId) {
     try {
-        const res = await fetch(
+        const res = await fetchWithTimeout(
             buildApiUrl("/api/pair/accept-request"),
             {
                 method: "POST",
@@ -516,7 +522,8 @@ async function acceptRequest(requestId, senderId, receiverId) {
                     senderId,
                     receiverId
                 })
-            }
+            },
+            10000
         );
 
         const data = await res.json();
@@ -546,7 +553,7 @@ async function acceptRequest(requestId, senderId, receiverId) {
 /* REJECT */
 async function rejectRequest(requestId) {
 
-    const res = await fetch(
+    const res = await fetchWithTimeout(
         buildApiUrl("/api/pair/reject-request"),
         {
             method: "POST",
@@ -556,7 +563,8 @@ async function rejectRequest(requestId) {
             body: JSON.stringify({
                 requestId
             })
-        }
+        },
+        10000
     );
 
     const data = await res.json();
@@ -601,7 +609,7 @@ async function loadDailyMessage() {
 
     try {
 
-        const res = await fetch(buildApiUrl(`/api/profile/daily/${pairId}`));
+        const res = await fetchWithTimeout(buildApiUrl(`/api/profile/daily/${pairId}`), {}, 8000);
         const data = await res.json();
 
         const popup = document.getElementById("dailyPopup");

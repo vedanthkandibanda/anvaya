@@ -1,4 +1,4 @@
-const { buildApiUrl, navigateTo } = window.APP_CONFIG;
+const { buildApiUrl, navigateTo, fetchWithTimeout } = window.APP_CONFIG;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -97,13 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         try {
-            const response = await fetch(buildApiUrl("/api/auth/register"), {
+            const response = await fetchWithTimeout(buildApiUrl("/api/auth/register"), {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(userData)
-            });
+            }, 12000);
 
             const data = await response.json();
 
