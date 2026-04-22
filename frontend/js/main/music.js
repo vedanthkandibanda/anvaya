@@ -1,4 +1,6 @@
-const socket = io("http://localhost:5000");
+const { apiBaseUrl, buildApiUrl, buildUploadUrl } = window.APP_CONFIG;
+
+const socket = io("https://anvaya-production.up.railway.app");
 
 const pairId = localStorage.getItem("pairId");
 const userId = localStorage.getItem("userId");
@@ -26,7 +28,7 @@ let currentSong = null;
 /* 🎧 SAMPLE SONGS */
 async function loadSongs() {
     try {
-        const res = await fetch(`http://localhost:5000/api/music/${pairId}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/music/${pairId}`);
         if (!res.ok) {
             throw new Error("Unable to load songs");
         }
@@ -90,7 +92,7 @@ async function uploadSong() {
     formData.append("name", name);
     formData.append("pairId", pairId);
 
-    const res = await fetch("http://localhost:5000/api/music/upload", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/music/upload", {
         method: "POST",
         body: formData
     });
@@ -119,7 +121,7 @@ function playSong(file) {
 
     currentSong = file;
 
-    const url = `http://localhost:5000/uploads/${file}`;
+    const url = `https://anvaya-production.up.railway.app/uploads/${file}`;
 
     player.src = url;
     player.currentTime = 0;
@@ -253,7 +255,7 @@ function joinMusic() {
 
     const data = incomingSong;
 
-    const url = `http://localhost:5000/uploads/${data.song}`;
+    const url = `https://anvaya-production.up.railway.app/uploads/${data.song}`;
 
     player.src = url;
     player.currentTime = data.time;
@@ -273,3 +275,4 @@ function joinMusic() {
 function closeInvite() {
     document.getElementById("invitePopup").classList.add("hidden");
 }
+

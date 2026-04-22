@@ -1,3 +1,5 @@
+const { buildApiUrl } = window.APP_CONFIG;
+
 const connectionActions = document.getElementById("connectionActions");
 const connectionName = document.getElementById("connectionName");
 const dashboardGrid = document.querySelector(".dashboard-grid");
@@ -49,7 +51,7 @@ async function loadDashboard() {
 
     try {
         const res = await fetch(
-            `http://localhost:5000/api/user/profile/${userId}`
+            `https://anvaya-production.up.railway.app/api/user/profile/${userId}`
         );
 
         if (!res.ok) {
@@ -161,7 +163,7 @@ async function loadConnectionBackground() {
     }
 
     try {
-        const res = await fetch(`http://localhost:5000/api/pair/connection-bg/${pairId}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/pair/connection-bg/${pairId}`);
         if (!res.ok) {
             clearConnectionBackground();
             return;
@@ -239,7 +241,7 @@ saveBgBtn.addEventListener("click", async () => {
     formData.append("userId", userId);
     formData.append("image", image);
 
-    const res = await fetch("http://localhost:5000/api/pair/connection-bg", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/pair/connection-bg", {
         method: "POST",
         body: formData
     });
@@ -259,7 +261,7 @@ resetBgBtn.addEventListener("click", async () => {
     const pairId = localStorage.getItem("pairId");
     if (!pairId) return;
 
-    const res = await fetch(`http://localhost:5000/api/pair/connection-bg/${pairId}?userId=${userId}`, {
+    const res = await fetch(`https://anvaya-production.up.railway.app/api/pair/connection-bg/${pairId}?userId=${userId}`, {
         method: "DELETE"
     });
 
@@ -329,7 +331,7 @@ document
 
     try {
         const res = await fetch(
-            `http://localhost:5000/api/pair/search?query=${encodeURIComponent(query)}&userId=${userId}`
+            `https://anvaya-production.up.railway.app/api/pair/search?query=${encodeURIComponent(query)}&userId=${userId}`
         );
 
         if (!res.ok) {
@@ -370,7 +372,7 @@ async function sendRequest(receiverId) {
 
     try {
         const res = await fetch(
-            "http://localhost:5000/api/pair/request",
+            "https://anvaya-production.up.railway.app/api/pair/request",
             {
                 method: "POST",
                 headers: {
@@ -409,7 +411,7 @@ async function viewRequests() {
     const userId = localStorage.getItem("userId");
 
     const res = await fetch(
-        `http://localhost:5000/api/pair/requests/${userId}`
+        `https://anvaya-production.up.railway.app/api/pair/requests/${userId}`
     );
 
     const requests = await res.json();
@@ -456,7 +458,7 @@ function closeRequestsModal() {
 async function acceptRequest(requestId, senderId, receiverId) {
     try {
         const res = await fetch(
-            "http://localhost:5000/api/pair/accept-request",
+            "https://anvaya-production.up.railway.app/api/pair/accept-request",
             {
                 method: "POST",
                 headers: {
@@ -496,7 +498,7 @@ async function acceptRequest(requestId, senderId, receiverId) {
 async function rejectRequest(requestId) {
 
     const res = await fetch(
-        "http://localhost:5000/api/pair/reject-request",
+        "https://anvaya-production.up.railway.app/api/pair/reject-request",
         {
             method: "POST",
             headers: {
@@ -552,7 +554,7 @@ async function loadDailyMessage() {
 
     try {
 
-        const res = await fetch(`http://localhost:5000/api/profile/daily/${pairId}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/profile/daily/${pairId}`);
         const data = await res.json();
 
         const popup = document.getElementById("dailyPopup");
@@ -591,3 +593,4 @@ async function loadDailyMessage() {
 window.addEventListener("load", () => {
     loadDailyMessage();
 });
+

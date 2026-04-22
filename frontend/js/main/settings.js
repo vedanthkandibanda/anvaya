@@ -1,3 +1,5 @@
+const { buildApiUrl } = window.APP_CONFIG;
+
 // 🔐 AUTH GUARD
 const token = localStorage.getItem("token");
 if (!token) {
@@ -38,7 +40,7 @@ async function disconnect() {
     if (!confirm("This will permanently delete all your messages and memories with your partner. Are you sure?")) return;
 
     try {
-        const res = await fetch("http://localhost:5000/api/pairs/disconnect", {
+        const res = await fetch("https://anvaya-production.up.railway.app/api/pairs/disconnect", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -73,3 +75,4 @@ function openAbout() {
 function openChangePassword() {
     window.location.href = "../auth/reset-password.html";
 }
+

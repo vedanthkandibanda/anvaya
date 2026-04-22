@@ -1,14 +1,7 @@
 import {getDB} from "../db.js";
+import { buildPublicUploadUrl } from "../config/appConfig.js";
 
 const db = getDB();
-
-function toPublicUploadUrl(value) {
-    if (!value) return null;
-    if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("data:")) {
-        return value;
-    }
-    return `http://localhost:5000/uploads/${value}`;
-}
 
 export const profileSetup = async (req, res) => {
     try {
@@ -92,7 +85,7 @@ export const updateUserProfile = async (req, res) => {
                 id: userId,
                 bio,
                 interests,
-                profile_pic: toPublicUploadUrl(newPic)
+                profile_pic: buildPublicUploadUrl(newPic)
             }
         });
     } catch (err) {
@@ -123,7 +116,7 @@ export const getUserProfile = async (req, res) => {
         }
 
         const user = users[0];
-        user.profile_pic = toPublicUploadUrl(user.profile_pic);
+        user.profile_pic = buildPublicUploadUrl(user.profile_pic);
 
         const [pairs] = await db.execute(
             `SELECT * FROM pairs
@@ -152,7 +145,7 @@ export const getUserProfile = async (req, res) => {
 
         const partner = partners[0] || null;
         if (partner) {
-            partner.profile_pic = toPublicUploadUrl(partner.profile_pic);
+            partner.profile_pic = buildPublicUploadUrl(partner.profile_pic);
         }
 
         res.json({

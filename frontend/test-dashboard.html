@@ -18,7 +18,7 @@
 
         async function testDashboard() {
             try {
-                const res = await fetch('http://localhost:5000/api/pair/status/5');
+                const res = await fetch('https://anvaya-production.up.railway.app/api/pair/status/5');
                 const data = await res.json();
                 document.getElementById("result").innerText = "API Response: " + JSON.stringify(data);
             } catch (err) {

@@ -1,3 +1,5 @@
+const { buildApiUrl } = window.APP_CONFIG;
+
 // 🔐 AUTH GUARD (ADD AT TOP)
 const token = localStorage.getItem("token");
 
@@ -94,7 +96,7 @@ async function loadProfileData() {
     if (!userId) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/user/profile/${userId}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/user/profile/${userId}`);
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
@@ -135,7 +137,7 @@ async function loadTodayDailyMessage() {
     if (!pairId) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/profile/daily/${pairId}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/profile/daily/${pairId}`);
         if (!res.ok) return;
 
         const data = await res.json();
@@ -187,7 +189,7 @@ document.getElementById("saveDaily").onclick = async () => {
         return;
     }
 
-    const res = await fetch("http://localhost:5000/api/profile/daily", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/profile/daily", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({ pairId, message: text })
@@ -210,7 +212,7 @@ saveBtn.onclick = async () => {
     const title = document.getElementById("memoryTitle").value;
     const desc = document.getElementById("memoryDesc").value;
 
-    const res = await fetch("http://localhost:5000/api/profile/memory", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/profile/memory", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -236,7 +238,7 @@ async function loadMemories() {
 
     list.innerHTML = "";
 
-    const res = await fetch(`http://localhost:5000/api/profile/memory/${pairId}`);
+    const res = await fetch(`https://anvaya-production.up.railway.app/api/profile/memory/${pairId}`);
     const data = await res.json();
 
     data.forEach(m => {
@@ -271,7 +273,7 @@ saveProfileBtn.addEventListener("click", async () => {
         formData.append("profilePic", editDpInput.files[0]);
     }
 
-    const res = await fetch("http://localhost:5000/api/user/profile-update", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/user/profile-update", {
         method: "POST",
         body: formData
     });
@@ -304,7 +306,7 @@ document.getElementById("smartSend").onclick = async () => {
         return;
     }
 
-    const res = await fetch("http://localhost:5000/api/profile/smart", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/profile/smart", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({
@@ -358,7 +360,7 @@ async function disconnectFromMenu() {
     if (!confirm("This will permanently delete all your messages and memories with your partner. Are you sure?")) return;
 
     try {
-        const res = await fetch("http://localhost:5000/api/pairs/disconnect", {
+        const res = await fetch("https://anvaya-production.up.railway.app/api/pairs/disconnect", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -390,4 +392,5 @@ function logoutFromMenu() {
     localStorage.clear();
     window.location.href = "../auth/login.html";
 }
+
 

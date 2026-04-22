@@ -1,3 +1,5 @@
+const { apiBaseUrl, buildApiUrl, buildUploadUrl } = window.APP_CONFIG;
+
 /* ❤️ HEARTS */
 const heartsContainer = document.getElementById("chatHearts");
 const moodBtn = document.getElementById("moodBtn");
@@ -16,7 +18,7 @@ const rawUserId = localStorage.getItem("userId");
 const userId = rawUserId && rawUserId !== "null" && rawUserId !== "undefined" ? rawUserId : null;
 let rawPairId = localStorage.getItem("pairId");
 let pairId = rawPairId && rawPairId !== "null" && rawPairId !== "undefined" ? rawPairId : null;
-const socket = io("http://localhost:5000");
+const socket = io(apiBaseUrl);
 
 const preview = document.getElementById("imagePreview");
 const previewImg = document.getElementById("previewImg");
@@ -146,7 +148,7 @@ async function fetchPairStatus() {
     if (!userId) return;
 
     try {
-        const res = await fetch(`http://localhost:5000/api/user/profile/${userId}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/user/profile/${userId}`);
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
@@ -245,7 +247,7 @@ fileInput.addEventListener("change", async () => {
         formData.append("pairId", pairId);
         formData.append("senderId", userId);
 
-        const response = await fetch("http://localhost:5000/api/messages/media", {
+        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/media", {
             method: "POST",
             body: formData
         });
@@ -313,7 +315,7 @@ function createMessageElement(msg) {
     const isLocked = !isScheduled && lockedUntil && now < lockedUntil;
 
     const actualContent = msg.media_url
-        ? `<img src="http://localhost:5000/uploads/${msg.media_url}" class="chat-img">`
+        ? `<img src="https://anvaya-production.up.railway.app/uploads/${msg.media_url}" class="chat-img">`
         : `<span>${msg.message || ""}</span>`;
 
     const tickMarkup = isOwn
@@ -379,7 +381,7 @@ function createMessageElement(msg) {
 async function loadMessages() {
     if (!pairId) return;
     try {
-        const res = await fetch(`http://localhost:5000/api/messages/${pairId}?userId=${encodeURIComponent(userId)}`);
+        const res = await fetch(`https://anvaya-production.up.railway.app/api/messages/${pairId}?userId=${encodeURIComponent(userId)}`);
         if (!res.ok) {
             throw new Error(`Failed to load messages: ${res.status}`);
         }
@@ -406,7 +408,7 @@ async function sendMessage() {
     sendStatus.textContent = "Sending...";
 
     try {
-        const response = await fetch("http://localhost:5000/api/messages/send", {
+        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/send", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -473,14 +475,14 @@ async function acknowledgeReceived() {
     if (!pairId || !userId) return;
 
     try {
-        await fetch("http://localhost:5000/api/messages/delivered", {
+        await fetch("https://anvaya-production.up.railway.app/api/messages/delivered", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ pairId, userId })
         });
         socket.emit("messageDelivered", pairId);
 
-        await fetch("http://localhost:5000/api/messages/seen", {
+        await fetch("https://anvaya-production.up.railway.app/api/messages/seen", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ pairId, userId })
@@ -625,7 +627,7 @@ reactionBox.addEventListener("click", async (e) => {
     const currentReaction = msg?.parentElement?.querySelector(".reaction")?.innerText || null;
     const reaction = currentReaction === emoji ? null : emoji;
 
-    const response = await fetch("http://localhost:5000/api/messages/react", {
+    const response = await fetch("https://anvaya-production.up.railway.app/api/messages/react", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -705,7 +707,7 @@ saveToVaultBtn.onclick = async () => {
     formData.append("memory_date", date);
     formData.append("file_url", fileName);
 
-    const res = await fetch("http://localhost:5000/api/vault", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/vault", {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -878,7 +880,7 @@ async function scheduleNewMessage() {
             message: text,
             deliverAt: utcDeliverAt
         };
-        const response = await fetch("http://localhost:5000/api/messages/send", {
+        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -941,7 +943,7 @@ async function editScheduledMessage() {
             message: text,
             deliverAt: utcDeliverAt
         };
-        const response = await fetch("http://localhost:5000/api/messages/schedule/edit", {
+        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/schedule/edit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
@@ -980,7 +982,7 @@ async function cancelScheduledMessage() {
     }
 
     try {
-        const response = await fetch("http://localhost:5000/api/messages/schedule/cancel", {
+        const response = await fetch("https://anvaya-production.up.railway.app/api/messages/schedule/cancel", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -1193,3 +1195,4 @@ setInterval(() => {
     });
 
 }, 3000);
+

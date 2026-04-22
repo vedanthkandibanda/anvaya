@@ -1,3 +1,5 @@
+const { buildApiUrl, buildUploadUrl } = window.APP_CONFIG;
+
 // 🔐 AUTH GUARD (ADD AT TOP)
 const token = localStorage.getItem("token");
 
@@ -65,7 +67,7 @@ function toUploadUrl(value) {
     if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("data:")) {
         return value;
     }
-    return `http://localhost:5000/uploads/${value}`;
+    return `https://anvaya-production.up.railway.app/uploads/${value}`;
 }
 
 function goBack() {
@@ -98,7 +100,7 @@ saveBtn.onclick = async () => {
     const file = document.getElementById("memoryFile").files[0];
     if (file) formData.append("file", file);
 
-    const res = await fetch("http://localhost:5000/api/vault", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/vault", {
         method: "POST",
         body: formData
     });
@@ -137,7 +139,7 @@ updateBtn.onclick = async () => {
         formData.append("file", file);
     }
 
-    const res = await fetch(`http://localhost:5000/api/vault/${editingMemoryId}`, {
+    const res = await fetch(`https://anvaya-production.up.railway.app/api/vault/${editingMemoryId}`, {
         method: "PUT",
         body: formData
     });
@@ -157,7 +159,7 @@ async function loadVault() {
 
     const pairId = localStorage.getItem("pairId");
 
-    const res = await fetch(`http://localhost:5000/api/vault/${pairId}`);
+    const res = await fetch(`https://anvaya-production.up.railway.app/api/vault/${pairId}`);
     const data = await res.json();
 
     timeline.innerHTML = "";
@@ -205,7 +207,7 @@ async function loadVault() {
         };
 
         card.querySelector(".memory-action-btn.delete").onclick = async () => {
-            const res = await fetch(`http://localhost:5000/api/vault/${m.id}`, {
+            const res = await fetch(`https://anvaya-production.up.railway.app/api/vault/${m.id}`, {
                 method: "DELETE"
             });
             if (!res.ok) {
@@ -226,3 +228,4 @@ async function loadVault() {
 }
 
 loadVault();
+

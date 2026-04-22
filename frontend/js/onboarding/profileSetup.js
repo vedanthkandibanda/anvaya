@@ -1,3 +1,5 @@
+const { buildApiUrl } = window.APP_CONFIG;
+
 const userId = localStorage.getItem("userId");
 
 if (!userId) {
@@ -56,7 +58,7 @@ profileForm.addEventListener("submit", async (e) => {
             formData.append("profilePic", profilePic);
         }
 
-        const res = await fetch("http://localhost:5000/api/user/profile-setup", {
+        const res = await fetch("https://anvaya-production.up.railway.app/api/user/profile-setup", {
             method: "POST",
             body: formData
         });
@@ -81,7 +83,7 @@ function skipProfile() {
         return;
     }
 
-    fetch("http://localhost:5000/api/user/profile-setup", {
+    fetch("https://anvaya-production.up.railway.app/api/user/profile-setup", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -126,3 +128,4 @@ dpInput.addEventListener("change", () => {
         reader.readAsDataURL(file);
     }
 });
+

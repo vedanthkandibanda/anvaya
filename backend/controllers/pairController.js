@@ -1,4 +1,5 @@
 import {getDB} from "../db.js";
+import { buildPublicUploadUrl } from "../config/appConfig.js";
 import fs from "fs";
 import path from "path";
 
@@ -12,14 +13,6 @@ async function ensureConnectionBgTable() {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     `);
-}
-
-function toPublicUploadUrl(value) {
-    if (!value) return null;
-    if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("data:")) {
-        return value;
-    }
-    return `http://localhost:5000/uploads/${value}`;
 }
 
 export const getConnectionStatus = async (req, res) => {
@@ -307,7 +300,7 @@ export const getConnectionBackground = async (req, res) => {
             return res.json({ imageUrl: null });
         }
 
-        return res.json({ imageUrl: toPublicUploadUrl(rows[0].image_url) });
+        return res.json({ imageUrl: buildPublicUploadUrl(rows[0].image_url) });
     } catch (err) {
         console.log("GET CONNECTION BG ERROR:", err);
         return res.status(500).json({ message: "Server error" });
@@ -361,7 +354,7 @@ export const saveConnectionBackground = async (req, res) => {
             }
         }
 
-        return res.json({ imageUrl: toPublicUploadUrl(nextFile) });
+        return res.json({ imageUrl: buildPublicUploadUrl(nextFile) });
     } catch (err) {
         console.log("SAVE CONNECTION BG ERROR:", err);
         return res.status(500).json({ message: "Server error" });

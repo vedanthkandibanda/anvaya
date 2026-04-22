@@ -1,3 +1,5 @@
+const { buildApiUrl } = window.APP_CONFIG;
+
 function goBack() {
     window.history.back();
 }
@@ -23,7 +25,7 @@ async function resetPassword() {
         return;
     }
 
-    const res = await fetch("http://localhost:5000/api/auth/reset-password", {
+    const res = await fetch("https://anvaya-production.up.railway.app/api/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
@@ -39,3 +41,4 @@ async function resetPassword() {
         alert(data.message || "Error updating password");
     }
 }
+
