@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
             localStorage.setItem("userId", data.user.id);
+            localStorage.setItem("onboardingRequired", data.firstLogin ? "1" : "0");
 
             btn.innerText = "Success ❤️";
             btn.classList.remove("loading");

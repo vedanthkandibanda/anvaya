@@ -35,6 +35,10 @@ if (!userId) {
     navigateTo("login");
 }
 
+if (localStorage.getItem("onboardingRequired") === "1") {
+    navigateTo("profileSetup");
+}
+
 if (!pairId) {
     partnerStatusEl.innerText = "Looking for your partner...";
 }

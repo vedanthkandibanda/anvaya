@@ -9,6 +9,10 @@ if (!userId) {
     navigateTo("login");
 }
 
+if (localStorage.getItem("onboardingRequired") === "1") {
+    navigateTo("profileSetup");
+}
+
 if (!pairId) {
     alert("You are not connected yet.");
     navigateTo("dashboard");

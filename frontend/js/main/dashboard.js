@@ -36,9 +36,10 @@ function showToast(message, type = "info") {
 /* CURRENT USER */
 const rawUserId = localStorage.getItem("userId");
 const userId = rawUserId && rawUserId !== "null" && rawUserId !== "undefined" ? rawUserId : null;
+const token = localStorage.getItem("token");
 
 /* CHECK AUTH */
-if (!userId) {
+if (!userId || !token) {
     console.log("No userId found, redirecting to login");
     navigateTo("login");
 } else {
@@ -61,14 +62,25 @@ async function loadDashboard() {
         const userData = await res.json();
         console.log("Dashboard data received:", userData);
 
+        if (userData.firstLogin || localStorage.getItem("onboardingRequired") === "1") {
+            navigateTo("profileSetup");
+            return;
+        }
+
+        localStorage.setItem("onboardingRequired", "0");
+
         if (userData.user) {
             localStorage.setItem("userId", userData.user.id);
         }
         if (userData.pairId) {
             localStorage.setItem("pairId", userData.pairId);
+        } else {
+            localStorage.removeItem("pairId");
         }
         if (userData.partner?.name) {
             localStorage.setItem("partnerName", userData.partner.name);
+        } else {
+            localStorage.removeItem("partnerName");
         }
 
         renderDashboard(userData);
@@ -313,7 +325,38 @@ function closeSearchModal() {
 
 /* DISCONNECT */
 function disconnect() {
-    showToast("Disconnect feature coming soon!", "info");
+    const pairId = localStorage.getItem("pairId");
+
+    if (!pairId) {
+        showToast("You are not connected to anyone.", "error");
+        return;
+    }
+
+    if (!confirm("This will permanently delete all your messages and memories with your partner. Are you sure?")) return;
+
+    fetch(buildApiUrl("/api/pair/disconnect"), {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ pairId, userId })
+    })
+        .then(async (res) => {
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data.message || "Failed to disconnect");
+            }
+
+            localStorage.removeItem("pairId");
+            localStorage.removeItem("partnerId");
+            localStorage.removeItem("partnerName");
+            showToast("Disconnected successfully", "success");
+            await loadDashboard();
+        })
+        .catch((err) => {
+            console.error("Disconnect failed:", err);
+            showToast(err.message || "Failed to disconnect", "error");
+        });
 }
 
 /* LIVE SEARCH */
@@ -418,8 +461,11 @@ async function viewRequests() {
 
     let html = "";
 
-    requests.forEach(req => {
-        html += `
+    if (!Array.isArray(requests) || requests.length === 0) {
+        html = "<p>No pending requests right now.</p>";
+    } else {
+        requests.forEach(req => {
+            html += `
             <div class="search-user-card">
                 <span>${req.username}</span>
 
@@ -442,7 +488,8 @@ async function viewRequests() {
                 </div>
             </div>
         `;
-    });
+        });
+    }
 
     document.getElementById("requestsResults").innerHTML = html;
 }
@@ -481,7 +528,9 @@ async function acceptRequest(requestId, senderId, receiverId) {
         const newPairId = data.pairId || (data.pair && data.pair.id);
         if (newPairId) {
             localStorage.setItem("pairId", newPairId);
-            navigateTo("chat");
+            closeRequestsModal();
+            await loadDashboard();
+            showToast(data.message || "Connected successfully", "success");
             return;
         }
 

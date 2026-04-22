@@ -100,7 +100,7 @@ export const getUserProfile = async (req, res) => {
         const userId = req.params.userId;
 
         const [users] = await db.execute(
-            `SELECT id, username AS name, bio, interests, profile_pic
+            `SELECT id, username AS name, bio, interests, profile_pic, first_login
              FROM users
              WHERE id = ?`,
             [userId]
@@ -127,7 +127,8 @@ export const getUserProfile = async (req, res) => {
                 user,
                 partner: null,
                 pairId: null,
-                isConnected: false
+                isConnected: false,
+                firstLogin: user.first_login === 1
             });
         }
 
@@ -150,7 +151,8 @@ export const getUserProfile = async (req, res) => {
             user,
             partner,
             pairId: pair.id,
-            isConnected: !!partner
+            isConnected: !!partner,
+            firstLogin: user.first_login === 1
         });
     } catch (err) {
         console.error("GET USER PROFILE ERROR:", err);

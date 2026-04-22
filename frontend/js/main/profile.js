@@ -7,6 +7,10 @@ if (!token) {
     navigateTo("login");
 }
 
+if (localStorage.getItem("onboardingRequired") === "1") {
+    navigateTo("profileSetup");
+}
+
 const profileDp = document.getElementById("profileDp");
 const profileName = document.getElementById("profileName");
 const profileBio = document.getElementById("profileBio");
@@ -103,11 +107,18 @@ async function loadProfileData() {
 
         const data = await res.json();
         if (data.user) {
+            if (data.firstLogin) {
+                localStorage.setItem("onboardingRequired", "1");
+                navigateTo("profileSetup");
+                return;
+            }
+
             profileName.innerText = data.user.name || "Your Name";
             profileBio.innerText = data.user.bio || "Your bio here...";
             profileDp.src = data.user.profile_pic || getAvatar(data.user.name);
             localStorage.setItem("userId", data.user.id);
             localStorage.setItem("userInterests", data.user.interests || "");
+            localStorage.setItem("onboardingRequired", "0");
         }
 
         if (data.partner) {
@@ -120,6 +131,8 @@ async function loadProfileData() {
             connectionStatusEl.innerText = "Not connected yet";
             connectionNameEl.innerText = "No partner";
             connectionSinceEl.innerText = "Connect from the dashboard";
+            localStorage.removeItem("pairId");
+            localStorage.removeItem("partnerName");
         }
     } catch (err) {
         console.error("Profile load failed", err);

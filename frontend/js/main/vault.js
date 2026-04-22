@@ -7,6 +7,10 @@ if (!token) {
     navigateTo("login");
 }
 
+if (localStorage.getItem("onboardingRequired") === "1") {
+    navigateTo("profileSetup");
+}
+
 const modal = document.getElementById("vaultModal");
 const uploadBtn = document.getElementById("uploadBtn");
 const saveBtn = document.getElementById("saveMemory");

@@ -67,7 +67,7 @@ export const registerUser = async (req, res) => {
 
         // 💾 INSERT USER
         await db.execute(
-            "INSERT INTO users (username, email, phone, password, gender) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO users (username, email, phone, password, gender, first_login) VALUES (?, ?, ?, ?, ?, 1)",
             [username, email, phone, hashedPassword, gender]
         );
 
@@ -87,10 +87,15 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        const { loginId, password } = req.body;
+        let { loginId, password } = req.body;
+
+        loginId = loginId?.trim();
+        const normalizedLoginId = loginId?.includes("@")
+            ? loginId.toLowerCase()
+            : loginId;
 
         /* EMPTY CHECK */
-        if (!loginId || !password) {
+        if (!normalizedLoginId || !password) {
             return res.status(400).json({
                 status: "error",
                 message: "All fields are required"
@@ -101,12 +106,12 @@ export const loginUser = async (req, res) => {
         let query = "";
         let value = "";
 
-        if (loginId.includes("@")) {
+        if (normalizedLoginId.includes("@")) {
             query = "SELECT * FROM users WHERE email = ?";
-            value = loginId;
+            value = normalizedLoginId;
         } else {
             query = "SELECT * FROM users WHERE phone = ?";
-            value = loginId;
+            value = normalizedLoginId;
         }
 
         /* FIND USER */

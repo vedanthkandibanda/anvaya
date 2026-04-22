@@ -5,6 +5,58 @@ dotenv.config();
 
 let db;
 
+const normalizePort = (value) => {
+  const port = Number(value);
+  return Number.isFinite(port) ? port : undefined;
+};
+
+const buildConnectionOptionsFromUrl = (connectionUrl) => {
+  if (!connectionUrl) return null;
+
+  try {
+    const parsed = new URL(connectionUrl);
+    return {
+      host: parsed.hostname,
+      user: decodeURIComponent(parsed.username || ""),
+      password: decodeURIComponent(parsed.password || ""),
+      database: parsed.pathname.replace(/^\/+/, "") || undefined,
+      port: normalizePort(parsed.port)
+    };
+  } catch (_err) {
+    return null;
+  }
+};
+
+const buildPrimaryConnectionOptions = () => ({
+  host: process.env.MYSQLHOST || process.env.DB_HOST,
+  user: process.env.MYSQLUSER || process.env.DB_USER,
+  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD,
+  database: process.env.MYSQLDATABASE || process.env.DB_NAME,
+  port: normalizePort(process.env.MYSQLPORT || process.env.DB_PORT)
+});
+
+const connectWithFallback = async () => {
+  const primaryOptions = buildPrimaryConnectionOptions();
+  const publicUrlOptions = buildConnectionOptionsFromUrl(process.env.MYSQL_PUBLIC_URL);
+
+  try {
+    return await mysql.createConnection(primaryOptions);
+  } catch (primaryError) {
+    const shouldRetryWithPublicUrl =
+      publicUrlOptions &&
+      primaryOptions.host &&
+      publicUrlOptions.host &&
+      primaryOptions.host !== publicUrlOptions.host;
+
+    if (!shouldRetryWithPublicUrl) {
+      throw primaryError;
+    }
+
+    console.warn("Primary DB connection failed, retrying with MYSQL_PUBLIC_URL host:", primaryError.message);
+    return mysql.createConnection(publicUrlOptions);
+  }
+};
+
 const getRuntimeFingerprint = () => ({
   railwayProject: process.env.RAILWAY_PROJECT_NAME || null,
   railwayEnvironment: process.env.RAILWAY_ENVIRONMENT_NAME || null,
@@ -50,13 +102,7 @@ export const logDBDiagnostics = async (label = "db") => {
 
 export const connectDB = async () => {
   try {
-    db = await mysql.createConnection({
-      host: process.env.MYSQLHOST,
-      user: process.env.MYSQLUSER,
-      password: process.env.MYSQLPASSWORD,
-      database: process.env.MYSQLDATABASE,
-      port: process.env.MYSQLPORT
-    });
+    db = await connectWithFallback();
 
     console.log("Railway DB connected");
     await logDBDiagnostics("startup");

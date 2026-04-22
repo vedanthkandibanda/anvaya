@@ -66,6 +66,7 @@ profileForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (res.ok && data.status === "success") {
+            localStorage.setItem("onboardingRequired", "0");
             navigateTo("dashboard");
             return;
         }
@@ -100,6 +101,7 @@ function skipProfile() {
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
+                localStorage.setItem("onboardingRequired", "0");
                 navigateTo("dashboard");
             } else {
                 showToast(data.message || "Unable to skip profile setup");

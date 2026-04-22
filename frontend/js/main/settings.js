@@ -6,6 +6,10 @@ if (!token) {
     navigateTo("login");
 }
 
+if (localStorage.getItem("onboardingRequired") === "1") {
+    navigateTo("profileSetup");
+}
+
 function goBack() {
     navigateTo("dashboard");
 }
