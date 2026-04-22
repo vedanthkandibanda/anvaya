@@ -32,7 +32,7 @@ const vaultMemoryDesc = document.getElementById("vaultMemoryDesc");
 let selectedImageUrl = null;
 
 if (!userId) {
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 }
 
 if (!pairId) {

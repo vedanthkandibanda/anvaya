@@ -6,7 +6,7 @@ const pairId = localStorage.getItem("pairId");
 const userId = localStorage.getItem("userId");
 
 if (!userId) {
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 }
 
 if (!pairId) {

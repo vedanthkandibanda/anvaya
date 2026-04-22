@@ -4,7 +4,7 @@ const { buildApiUrl, buildUploadUrl } = window.APP_CONFIG;
 const token = localStorage.getItem("token");
 
 if (!token) {
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 }
 
 const modal = document.getElementById("vaultModal");

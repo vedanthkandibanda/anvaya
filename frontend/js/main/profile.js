@@ -4,7 +4,7 @@ const { buildApiUrl } = window.APP_CONFIG;
 const token = localStorage.getItem("token");
 
 if (!token) {
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 }
 
 const profileDp = document.getElementById("profileDp");
@@ -390,7 +390,7 @@ function logoutFromMenu() {
     menuPopup.classList.add("hidden");
     if (!confirm("Are you sure you want to logout?")) return;
     localStorage.clear();
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 }
 
 

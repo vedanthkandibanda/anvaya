@@ -3,7 +3,7 @@ const { buildApiUrl } = window.APP_CONFIG;
 const userId = localStorage.getItem("userId");
 
 if (!userId) {
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 }
 
 const profileForm = document.getElementById("profileForm");
@@ -66,7 +66,7 @@ profileForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         if (res.ok && data.status === "success") {
-            window.location.href = "../dashboard.html";
+            window.location.href = "/dashboard";
             return;
         }
 
@@ -79,7 +79,7 @@ profileForm.addEventListener("submit", async (e) => {
 
 function skipProfile() {
     if (!userId) {
-        window.location.href = "../auth/login.html";
+        window.location.href = "/login";
         return;
     }
 
@@ -100,7 +100,7 @@ function skipProfile() {
         .then(res => res.json())
         .then(data => {
             if (data.status === "success") {
-                window.location.href = "../dashboard.html";
+                window.location.href = "/dashboard";
             } else {
                 showToast(data.message || "Unable to skip profile setup");
             }

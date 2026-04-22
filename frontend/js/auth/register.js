@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.classList.add("success-done");
 
             setTimeout(() => {
-                window.location.href = "../auth/login.html";
+                window.location.href = "/login";
             }, 1200);
 
         } catch (error) {

@@ -40,7 +40,7 @@ const userId = rawUserId && rawUserId !== "null" && rawUserId !== "undefined" ? 
 /* CHECK AUTH */
 if (!userId) {
     console.log("No userId found, redirecting to login");
-    window.location.href = "../auth/login.html";
+    window.location.href = "/login";
 } else {
     console.log("User ID found:", userId);
 }
